@@ -51,7 +51,20 @@ class Grid {
     }
   }
 
-  bool checkWin() {
+  bool checkWinner(int x, y) {
+    var col = 0, row = 0, diag = 0, rdiag = 0;
+    var n = grid.length - 1;
+    var player = grid[x][y];
+
+    for (int i = 0; i < grid.length; i++) {
+      if (grid[x][i] == player) col++;
+      if (grid[i][y] == player) row++;
+      if (grid[i][i] == player) diag++;
+      if (grid[i][n - i] == player) rdiag++;
+    }
+    if (row == n + 1 || col == n + 1 || diag == n + 1 || rdiag == n + 1) {
+      return true;
+    }
     return false;
   }
 
