@@ -40,7 +40,7 @@ Widget buildTile(int row, int column) {
     aspectRatio: 1.0,
     child: new MaterialButton(
       onPressed: () {},
-      child: new Text("hello"), //row.toString() + ", " + column.toString()
+      child: new Text(row.toString() + ", " + column.toString()),
     )
   );
 }

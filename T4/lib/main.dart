@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
         ),
 
         body: Center(
-          child: buildBoard(5, 9),
+          child: buildBoard(4, 3),
         ),
       ),
     );
