@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'board.dart';
+import 'components/board.dart';
 
 void main() {
   runApp(MyApp());
