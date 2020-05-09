@@ -1,27 +1,51 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter/widgets.dart';
 
-Widget buildBoard(int rows, int columns) {
+import 'grid.dart';
+import 'move.dart';
+
+class Board extends StatefulWidget {
+  final Grid grid = Grid.normal();
+
+  Board(); //implement later (with player names?)
+
+  @override
+  _BoardState createState() => _BoardState(grid);
+}
+
+class _BoardState extends State<StatefulWidget> {
+  Grid grid;
+  _BoardState(this.grid);
+
+  @override
+  Widget build(BuildContext context) {
+    return buildBoard(grid);
+  }
+}
+
+
+Widget buildBoard(Grid grid) {
   //check that this works as non-integer division
-  double aspectRatio = rows / columns;
+  double aspectRatio = grid.rows() / grid.cols();
 
   return AspectRatio(
     //want width/height, so rows/columns
     aspectRatio: aspectRatio,
     child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: buildGrid(rows, columns),
+      children: buildGrid(grid),
     ),
   );
 }
 
-List<Widget> buildGrid(int rows, int columns) {
+List<Widget> buildGrid(Grid grid) {
   List<Widget> columnWidgets = [];
 
-  for (int i = 0; i < columns; i++) {
+  for (int i = 0; i < grid.cols(); i++) {
     List<Widget> rowWidgets = [];
-    for (int j = 0; j < rows; j++) {
-      rowWidgets.add(buildTile(i, j));
+    for (int j = 0; j < grid.rows(); j++) {
+      rowWidgets.add(buildTile(grid.grid[i][j]));
     }
 
     columnWidgets.add(Expanded(
@@ -35,13 +59,12 @@ List<Widget> buildGrid(int rows, int columns) {
 }
 
 //use row and col to do logic stuff later
-Widget buildTile(int row, int column) {
+Widget buildTile(Move move) {
   return AspectRatio(
     aspectRatio: 1.0,
     child: new MaterialButton(
       onPressed: () {},
-      child: new Text(row.toString() + ", " + column.toString()),
+      child: new Text(move.toString()),
     )
   );
 }
-
