@@ -1,19 +1,25 @@
 import 'move.dart';
+import 'turn.dart';
 
 //TODO implement history/undo functions
+
 class Grid {
   List<List<Move>> grid; //list of rows (first list is y axis, second is x)
   int inARow;
-  
+  List<Turn> history;
+
   int turn;
   List<Move> player;
 
   Grid(row, col, this.inARow) {
     grid = List.generate(row, (i) => new List.filled(col, Move.empty, growable: true));
     setTurn(0);
+
     player = List<Move>();
     player.add(Move.x);
     player.add(Move.o);
+
+    history = List<Turn>();
   }
 
   Grid.normal() : this(3, 3, 3);
@@ -23,11 +29,11 @@ class Grid {
   }
 
   int rows() {
-    return grid[0].length;
+    return grid.length;
   }
 
   int cols() {
-    return grid.length;
+    return grid[0].length;
   }
 
   // 0 - Left
@@ -49,10 +55,14 @@ class Grid {
         grid.add(List<Move>.filled(cols(), Move.empty, growable: true));
         break;
     }
+    List<int> params = List<int>();
+    params.add(dir);
+    Turn currentTurn = new Turn(turn, MoveType.extend, params);
+    history.add(currentTurn);
+    turn++;
   }
   
   bool checkWinner(int x, y) {
-    /*
     var col = 0, row = 0, diag = 0, rdiag = 0;
     var n = grid.length - 1;
     var player = grid[x][y];
@@ -67,14 +77,20 @@ class Grid {
       return true;
     }
     return false;
-    */
   }
   
 
   bool move(int x, int y) {
     if (grid[x][y] == Move.empty) {
       grid[x][y] = player[turn % 2];
+
+      List<int> params = List<int>();
+      params.add(x);
+      params.add(y);
+      Turn currentTurn = new Turn(turn, MoveType.move, params);
+      history.add(currentTurn);
       turn++;
+      printHistory();
       print(checkWinner(x, y));
       return true;
     }
@@ -85,8 +101,23 @@ class Grid {
     if (grid[x1][y1] == Move.empty && grid[x2][y2] == Move.empty) {
       grid[x1][y1] = Move.block;
       grid[x2][y2] = Move.block;
+
+      List<int> params = List<int>();
+      params.add(x1);
+      params.add(y1);
+      params.add(x2);
+      params.add(y2);
+      Turn currentTurn = new Turn(turn, MoveType.block, params);
+      history.add(currentTurn);
+
+      turn++;
       return true;
     }
     return false;
+  }
+
+  void printHistory() {
+    print("Printing History:");
+    history.forEach((element) => element.printTurn());
   }
 }
