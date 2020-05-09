@@ -55,15 +55,16 @@ class Grid {
     return false;
   }
 
-  bool move(int x, y) {
+  bool move(int x, int y) {
     if (grid[x][y] == Move.empty) {
       grid[x][y] = player[turn % 2];
+      turn++;
       return true;
     }
     return false;
   }
 
-  bool block(int x1, y1, x2, y2) {
+  bool block(int x1, int y1, int x2, int y2) {
     if (grid[x1][y1] == Move.empty && grid[x2][y2] == Move.empty) {
       grid[x1][y1] = Move.block;
       grid[x2][y2] = Move.block;

@@ -22,63 +22,67 @@ class _BoardState extends State<StatefulWidget> {
   Widget build(BuildContext context) {
     return buildBoard(grid);
   }
-}
 
 
-Widget buildBoard(Grid grid) {
-  //check that this works as non-integer division
-  double aspectRatio = grid.rows() / grid.cols();
+  Widget buildBoard(Grid grid) {
+    //check that this works as non-integer division
+    double aspectRatio = grid.rows() / grid.cols();
 
-  return AspectRatio(
-    //want width/height, so rows/columns
-    aspectRatio: aspectRatio,
-    child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: buildGrid(grid),
-    ),
-  );
-}
+    return AspectRatio(
+      //want width/height, so rows/columns
+      aspectRatio: aspectRatio,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: buildGrid(grid),
+      ),
+    );
+  }
 
-List<Widget> buildGrid(Grid grid) {
-  List<Widget> columnWidgets = [];
+  List<Widget> buildGrid(Grid grid) {
+    List<Widget> columnWidgets = [];
 
-  for (int i = 0; i < grid.cols(); i++) {
-    List<Widget> rowWidgets = [];
-    for (int j = 0; j < grid.rows(); j++) {
-      rowWidgets.add(buildTile(grid.grid[i][j]));
+    for (int i = 0; i < grid.cols(); i++) {
+      List<Widget> rowWidgets = [];
+      for (int j = 0; j < grid.rows(); j++) {
+        rowWidgets.add(buildTile(grid, i, j));
+      }
+
+      columnWidgets.add(Expanded(
+          child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: rowWidgets,
+      )));
+    }
+    return columnWidgets;
+  }
+
+  //use row and col to do logic stuff later
+  Widget buildTile(Grid grid, x, y) {
+    Image image;
+    switch (grid.grid[x][y]) {
+      case Move.o:
+        image = Image.asset('assets/images/o.png');
+        break;
+      case Move.x:
+        image = Image.asset('assets/images/x.png');
+        break;
+      case Move.block:
+        image = Image.asset('assets/images/block.png');
+        break;
+      case Move.empty:
+        image = Image.asset('assets/images/block.png'); //change to empty
     }
 
-    columnWidgets.add(Expanded(
-        child: Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: rowWidgets,
-    )));
+    return AspectRatio(
+      aspectRatio: 1.0,
+      child: MaterialButton(
+        onPressed: () {
+          setState(() {
+            grid.move(x, y);
+          });
+        },
+        child: image,
+      ),
+    );
   }
-  return columnWidgets;
-}
-
-//use row and col to do logic stuff later
-Widget buildTile(Move move) {
-  Image image;
-  switch (move) {
-    case Move.o:
-      image = Image.asset('assets/images/o.png');
-      break;
-    case Move.x:
-      image = Image.asset('assets/images/x.png');
-      break;
-    case Move.block:
-      image = Image.asset('assets/images/block.png');
-      break;
-    case Move.empty:
-      image = Image.asset('assets/images/block.png'); //change to empty
-  }
-
-  return AspectRatio(
-    aspectRatio: 1.0,
-    child: new MaterialButton(
-      onPressed: () {},
-      child: image,
-    ),
-  );
 }
