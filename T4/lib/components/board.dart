@@ -20,7 +20,40 @@ class _BoardState extends State<StatefulWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return buildBoard(grid);
+    //return buildBoard(grid);
+    return Row(
+      children: [
+        buildBoard(grid),
+        Column(
+          children: [
+            MaterialButton(
+              onPressed: () {
+                setState(() => grid.extend(0));
+              },
+              child: Text("left"),
+            ),
+            MaterialButton(
+              onPressed: () {
+                setState(() => grid.extend(1));
+              },
+              child: Text("right"),
+            ),
+            MaterialButton(
+              onPressed: () {
+                setState(() => grid.extend(2));
+              },
+              child: Text("top"),
+            ),
+            MaterialButton(
+              onPressed: () {
+                setState(() => grid.extend(3));
+              },
+              child: Text("bottom"),
+            )
+          ],
+        ),
+      ],
+    );
   }
 
 
@@ -70,11 +103,29 @@ class _BoardState extends State<StatefulWidget> {
         image = Image.asset('assets/images/block.png');
         break;
       case Move.empty:
-        image = Image.asset('assets/images/block.png'); //change to empty
+        //image = Image.asset('assets/images/block.png'); //change to empty
     }
 
     return AspectRatio(
       aspectRatio: 1.0,
+      /*
+      child: GestureDetector(
+        onTap: () {
+          setState(() {
+            grid.move(x, y);
+          });
+        },
+        /*
+        onPanEnd: (DragEndDetails d) {
+          setState() {
+            grid.block(d.)
+          }
+        },
+        */
+        child: image
+      ),
+      */
+      
       child: MaterialButton(
         onPressed: () {
           setState(() {
@@ -83,6 +134,7 @@ class _BoardState extends State<StatefulWidget> {
         },
         child: image,
       ),
+      
     );
   }
 }
