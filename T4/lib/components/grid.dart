@@ -37,24 +37,16 @@ class Grid {
   void extend(int dir) {
     switch (dir) {
       case 0:
-        {
-          grid.forEach((row) => row.insert(0, Move.empty));
-        }
+        grid.forEach((row) => row.insert(0, Move.empty));
         break;
       case 1:
-        {
-          grid.forEach((row) => row.add(Move.empty));
-        }
+        grid.forEach((row) => row.add(Move.empty));
         break;
       case 2:
-        {
-          grid.insert(0, List<Move>.filled(cols(), Move.empty));
-        }
+        grid.insert(0, List<Move>.filled(cols(), Move.empty));
         break;
       case 3:
-        {
-          grid.add(List<Move>.filled(cols(), Move.empty));
-        }
+        grid.add(List<Move>.filled(cols(), Move.empty));
         break;
     }
   }

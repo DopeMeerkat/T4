@@ -49,22 +49,36 @@ List<Widget> buildGrid(Grid grid) {
     }
 
     columnWidgets.add(Expanded(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: rowWidgets,
-      )
-    ));
+        child: Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: rowWidgets,
+    )));
   }
   return columnWidgets;
 }
 
 //use row and col to do logic stuff later
 Widget buildTile(Move move) {
+  Image image;
+  switch (move) {
+    case Move.o:
+      image = Image.asset('assets/images/o.png');
+      break;
+    case Move.x:
+      image = Image.asset('assets/images/x.png');
+      break;
+    case Move.block:
+      image = Image.asset('assets/images/block.png');
+      break;
+    case Move.empty:
+      image = Image.asset('assets/images/block.png'); //change to empty
+  }
+
   return AspectRatio(
     aspectRatio: 1.0,
     child: new MaterialButton(
       onPressed: () {},
-      child: new Text(move.toString()),
-    )
+      child: image,
+    ),
   );
 }
