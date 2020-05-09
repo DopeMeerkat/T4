@@ -15,7 +15,6 @@ class Grid {
     grid = List.generate(
         row, (i) => new List.filled(col, Move.empty, growable: true));
     setTurn(0);
-
     player = List<Move>();
     player.add(Move.x);
     player.add(Move.o);
@@ -63,47 +62,81 @@ class Grid {
     turn++;
   }
 
-  bool checkWinner(int x, y) {
-    var col = 0, row = 0, diag = 0, rdiag = 0;
-    var n = grid.length - 1;
-    var player = grid[x][y];
+  bool checkWinner(int r, c) {
+    var hor = 0, vert = 0, slash = 0, bSlash = 0;
+    var player = grid[r][c];
+    // print(grid);
+    var rows = grid.length;
+    var cols = grid[0].length;
+    var max = rows;
+    if (cols > rows) max = cols;
+    //slashRowStart, slashColStart, bSlash row start, bSlash col start
+    var srs = 0, scs = cols - 1, bsrs = 0, bscs = 0;
+    if (r < c) //find r c of bSlash
+      bscs = c - r;
+    else
+      bsrs = r - c;
 
-    for (int i = 0; i < grid.length; i++) {
-      if (grid[x][i] == player) col++;
-      if (grid[i][y] == player) row++;
-      if (grid[i][i] == player) diag++;
-      if (grid[i][n - i] == player) rdiag++;
+    if (r < (cols - 1 - c)) //find r c of slash
+      scs = 1 + c + r;
+    else
+      srs = r - (cols - 1 - c);
+
+    for (int i = 0; i < max; i++) {
+      if (i < cols && grid[r][i] == player) //find horizontal
+        hor++;
+      else if (hor < inARow) hor = 0;
+
+      if (i < rows && grid[i][c] == player) //find vertical
+        vert++;
+      else if (vert < inARow) vert = 0;
+
+      // find backslash
+      if (bsrs + i < rows &&
+          bscs + i < cols &&
+          grid[bsrs + i][bscs + i] == player)
+        bSlash++;
+      else if (bSlash < inARow) bSlash = 0;
+
+      //find slash
+      if (srs + i < rows && scs - i >= 0 && grid[srs + i][scs - i] == player)
+        slash++;
+      else if (slash < inARow) slash = 0;
     }
-    return (row == n + 1 || col == n + 1 || diag == n + 1 || rdiag == n + 1);
+
+    return (vert >= inARow ||
+        hor >= inARow ||
+        slash >= inARow ||
+        bSlash >= inARow);
   }
 
-  bool move(int x, int y) {
-    if (grid[x][y] == Move.empty) {
-      grid[x][y] = player[turn % 2];
+  bool move(int r, int c) {
+    if (grid[r][c] == Move.empty) {
+      grid[r][c] = player[turn % 2];
 
       List<int> params = List<int>();
-      params.add(x);
-      params.add(y);
+      params.add(r);
+      params.add(c);
       Turn currentTurn = new Turn(turn, MoveType.move, params);
       history.add(currentTurn);
       turn++;
       printHistory();
-      print(checkWinner(x, y));
+      print(checkWinner(r, c));
       return true;
     }
     return false;
   }
 
-  bool block(int x1, int y1, int x2, int y2) {
-    if (grid[x1][y1] == Move.empty && grid[x2][y2] == Move.empty) {
-      grid[x1][y1] = Move.block;
-      grid[x2][y2] = Move.block;
+  bool block(int r1, int c1, int r2, int c2) {
+    if (grid[r1][c1] == Move.empty && grid[r2][c2] == Move.empty) {
+      grid[r1][c1] = Move.block;
+      grid[r2][c2] = Move.block;
 
       List<int> params = List<int>();
-      params.add(x1);
-      params.add(y1);
-      params.add(x2);
-      params.add(y2);
+      params.add(r1);
+      params.add(c1);
+      params.add(r2);
+      params.add(c2);
       Turn currentTurn = new Turn(turn, MoveType.block, params);
       history.add(currentTurn);
 
