@@ -12,8 +12,8 @@ class Grid {
   List<Move> player;
 
   Grid(row, col, this.inARow) {
-    grid = List.generate(row, (i) => new List.filled(col, Move.empty));
-
+    grid = List.generate(
+        row, (i) => new List.filled(col, Move.empty, growable: true));
     setTurn(0);
 
     player = List<Move>();
@@ -50,10 +50,10 @@ class Grid {
         grid.forEach((row) => row.add(Move.empty));
         break;
       case 2:
-        grid.insert(0, List<Move>.filled(cols(), Move.empty));
+        grid.insert(0, List<Move>.filled(cols(), Move.empty, growable: true));
         break;
       case 3:
-        grid.add(List<Move>.filled(cols(), Move.empty));
+        grid.add(List<Move>.filled(cols(), Move.empty, growable: true));
         break;
     }
     List<int> params = List<int>();
