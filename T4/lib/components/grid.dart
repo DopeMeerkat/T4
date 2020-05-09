@@ -30,11 +30,11 @@ class Grid {
   }
 
   int rows() {
-    return grid[0].length;
+    return grid.length;
   }
 
   int cols() {
-    return grid.length;
+    return grid[0].length;
   }
 
   // 0 - Left
@@ -88,7 +88,7 @@ class Grid {
       history.add(currentTurn);
       turn++;
       printHistory();
-      // print(checkWinner(x, y));
+      print(checkWinner(x, y));
       return true;
     }
     return false;

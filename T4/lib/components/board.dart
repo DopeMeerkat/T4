@@ -59,7 +59,7 @@ class _BoardState extends State<StatefulWidget> {
 
   Widget buildBoard(Grid grid) {
     //check that this works as non-integer division
-    double aspectRatio = grid.rows() / grid.cols();
+    double aspectRatio = grid.cols() / grid.rows();
 
     return AspectRatio(
       //want width/height, so rows/columns
@@ -74,9 +74,9 @@ class _BoardState extends State<StatefulWidget> {
   List<Widget> buildGrid(Grid grid) {
     List<Widget> columnWidgets = [];
 
-    for (int i = 0; i < grid.cols(); i++) {
+    for (int i = 0; i < grid.rows(); i++) {
       List<Widget> rowWidgets = [];
-      for (int j = 0; j < grid.rows(); j++) {
+      for (int j = 0; j < grid.cols(); j++) {
         rowWidgets.add(buildTile(grid, i, j));
       }
 
