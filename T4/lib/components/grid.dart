@@ -1,18 +1,22 @@
 import 'move.dart';
 
+//TODO implement history/undo functions
 class Grid {
   List<List<Move>> grid; //list of rows (first list is y axis, second is x)
+  int inARow;
+  
   int turn;
   List<Move> player;
 
-  Grid(row, col) {
+  Grid(row, col, this.inARow) {
     grid = List.generate(row, (i) => new List.filled(col, Move.empty));
     setTurn(0);
-    player[0] = Move.x; //
-    player[1] = Move.o;
+    player = List<Move>();
+    player.add(Move.x);
+    player.add(Move.o);
   }
 
-  Grid.normal() : this(3, 3);
+  Grid.normal() : this(3, 3, 3);
 
   void setTurn(int _turn) {
     turn = _turn;
@@ -33,24 +37,16 @@ class Grid {
   void extend(int dir) {
     switch (dir) {
       case 0:
-        {
-          grid.forEach((row) => row.insert(0, Move.empty));
-        }
+        grid.forEach((row) => row.insert(0, Move.empty));
         break;
       case 1:
-        {
-          grid.forEach((row) => row.add(Move.empty));
-        }
+        grid.forEach((row) => row.add(Move.empty));
         break;
       case 2:
-        {
-          grid.insert(0, List<Move>.filled(cols(), Move.empty));
-        }
+        grid.insert(0, List<Move>.filled(cols(), Move.empty));
         break;
       case 3:
-        {
-          grid.add(List<Move>.filled(cols(), Move.empty));
-        }
+        grid.add(List<Move>.filled(cols(), Move.empty));
         break;
     }
   }
@@ -72,15 +68,16 @@ class Grid {
     return false;
   }
 
-  bool move(int x, y) {
+  bool move(int x, int y) {
     if (grid[x][y] == Move.empty) {
       grid[x][y] = player[turn % 2];
+      turn++;
       return true;
     }
     return false;
   }
 
-  bool block(int x1, y1, x2, y2) {
+  bool block(int x1, int y1, int x2, int y2) {
     if (grid[x1][y1] == Move.empty && grid[x2][y2] == Move.empty) {
       grid[x1][y1] = Move.block;
       grid[x2][y2] = Move.block;
