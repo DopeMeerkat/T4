@@ -25,11 +25,10 @@ List<Widget> buildGrid(int rows, int columns) {
     }
 
     columnWidgets.add(Expanded(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: rowWidgets,
-      )
-    ));
+        child: Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: rowWidgets,
+    )));
   }
   return columnWidgets;
 }
@@ -40,7 +39,7 @@ Widget buildTile(int row, int column) {
     aspectRatio: 1.0,
     child: new MaterialButton(
       onPressed: () {},
-      child: new Text(row.toString() + ", " + column.toString()),
-    )
+      child: new Image.asset('assets/images/o.png'),
+    ),
   );
 }
