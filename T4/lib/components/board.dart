@@ -90,9 +90,9 @@ class _BoardState extends State<StatefulWidget> {
   }
 
   //use row and col to do logic stuff later
-  Widget buildTile(Grid grid, x, y) {
+  Widget buildTile(Grid grid, r, c) {
     Image image;
-    switch (grid.grid[x][y]) {
+    switch (grid.grid[r][c]) {
       case Move.o:
         image = Image.asset('assets/images/o.png');
         break;
@@ -129,7 +129,7 @@ class _BoardState extends State<StatefulWidget> {
       child: MaterialButton(
         onPressed: () {
           setState(() {
-            grid.move(x, y);
+            grid.move(r, c);
           });
         },
         child: image,
