@@ -9,6 +9,16 @@ class Grid {
   int turn;
   List<Move> player;
 
+  
+  Map<String, dynamic> toJson() => 
+  {
+    'grid': grid,
+    'inARow': inARow,
+    'history': history,
+    'turn': turn,
+    'player': player
+  };
+
   Grid(row, col, this.inARow) {
     grid = List.generate(
         row, (i) => new List.filled(col, Move.empty, growable: true));
@@ -244,4 +254,5 @@ class Grid {
     print("Printing History:");
     history.forEach((element) => element.printTurn());
   }
+
 }

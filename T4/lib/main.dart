@@ -6,12 +6,12 @@ void main() {
   /*
   initializeApp(
     apiKey: "AIzaSyCvVp-W_TqDhwIKD0U0XV8-N_1oqfETt8U",
-    authDomain: "YourAuthDomain",
-    databaseURL: "YourDatabaseUrl",
+    authDomain: "t4.firebaseapp.com",
+    databaseURL: "https://t4database.firebaseio.com/",
     projectId: "t4database",
-    storageBucket: "YourStorageBucket"
   );
   */
+
   runApp(MyApp());
 }
 

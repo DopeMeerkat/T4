@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter/widgets.dart';
+import 'package:firebase/firestore.dart';
 
 import 'grid.dart';
 import 'move.dart';
@@ -17,13 +18,16 @@ class Board extends StatefulWidget {
 
 class _BoardState extends State<StatefulWidget>
     with SingleTickerProviderStateMixin {
+
   AnimationController _controller;
   Grid grid;
   Offset startBlock;
   Offset endBlock; //for block moves
-  _BoardState(this.grid);
   GlobalKey _boardKey = GlobalKey();
   double r1 = 0, c1 = 0, r2 = 1, c2 = 1;
+
+
+  _BoardState(this.grid);
 
   @override
   void initState() {
@@ -113,7 +117,10 @@ class _BoardState extends State<StatefulWidget>
           MaterialButton(
             onPressed: () {
               // _startAnimation();
-              setState(() => grid.reset(3, 3));
+              setState(() {
+                grid.reset(3, 3);
+                dispose();
+              });
             },
             child: Text("New Game"),
           ),
@@ -122,7 +129,6 @@ class _BoardState extends State<StatefulWidget>
     );
   }
 
-  AnimatedPainter painter(_controller) {}
 
   Widget buildBoard(Grid grid) {
     //check that this works as non-integer division
