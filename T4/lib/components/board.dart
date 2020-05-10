@@ -16,7 +16,8 @@ class Board extends StatefulWidget {
 
 class _BoardState extends State<StatefulWidget> {
   Grid grid;
-  Offset dragLocation; //for block moves
+  Offset startBlock;
+  Offset endBlock; //for block moves
   _BoardState(this.grid);
   GlobalKey _boardKey = GlobalKey();
   
@@ -27,7 +28,22 @@ class _BoardState extends State<StatefulWidget> {
       children: [
         Container(
           key: _boardKey,
-          child: buildBoard(grid),
+          child: GestureDetector(
+            onPanStart: (DragStartDetails d) {
+              startBlock = d.globalPosition;
+            },
+            onPanUpdate: (DragUpdateDetails d) {
+              endBlock = d.globalPosition;
+            },
+            onPanEnd: (DragEndDetails d) {
+              setState(() {
+                List<int> startTile = getTileFromLocation(startBlock);
+                List<int> endTile = getTileFromLocation(endBlock);
+                grid.block(startTile[0], startTile[1], endTile[0], endTile[1]);
+              });
+            },
+            child: buildBoard(grid),
+          ),
         ),
         Column(
           children: [
@@ -94,6 +110,19 @@ class _BoardState extends State<StatefulWidget> {
     return columnWidgets;
   }
 
+  //converts global position to local board position and gets tile
+  List<int> getTileFromLocation(Offset o) {
+    RenderBox rb = _boardKey.currentContext.findRenderObject();
+    double boardWidth = rb.size.width;
+    double boardHeight = rb.size.height;
+
+    Offset relativeToBoard = rb.globalToLocal(o);
+
+    double row = relativeToBoard.dy / (boardHeight / grid.rows());
+    double col = relativeToBoard.dx / (boardWidth / grid.cols());
+    return [row.floor(), col.floor()];
+  }
+
   //use row and col to do logic stuff later
   Widget buildTile(Grid grid, r, c) {
     Image image;
@@ -111,40 +140,16 @@ class _BoardState extends State<StatefulWidget> {
         //image = Image.asset('assets/images/block.png'); //change to empty
     }
     
-    //converts global position to local board position and gets tile
-    List<int> getTileFromLocation(Offset o) {
-      RenderBox rb = _boardKey.currentContext.findRenderObject();
-      double boardWidth = rb.size.width;
-      double boardHeight = rb.size.height;
-
-      Offset relativeToBoard = rb.globalToLocal(o);
-
-      double row = relativeToBoard.dy / (boardHeight / grid.rows());
-      double col = relativeToBoard.dx / (boardWidth / grid.cols());
-      return [row.floor(), col.floor()];
-    }
     
     return AspectRatio(
       aspectRatio: 1.0,
-      child: GestureDetector(
-        onPanUpdate: (DragUpdateDetails d) {
-          dragLocation = d.globalPosition;
-        },
-        onPanEnd: (DragEndDetails d) {
-          setState(() {
-            List<int> tile = getTileFromLocation(dragLocation);
-            print(tile);
-            grid.block(r, c, tile[0], tile[1]);
-          });
-        },
-        child: MaterialButton(
+      child: MaterialButton(
           onPressed: () {
             setState(() {
               grid.move(r, c);
             });
           },
         child: image,
-      ),
       ),
     );
   }
