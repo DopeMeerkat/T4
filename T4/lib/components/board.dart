@@ -16,14 +16,19 @@ class Board extends StatefulWidget {
 
 class _BoardState extends State<StatefulWidget> {
   Grid grid;
+  Offset dragLocation; //for block moves
   _BoardState(this.grid);
-
+  GlobalKey _boardKey = GlobalKey();
+  
   @override
   Widget build(BuildContext context) {
     //return buildBoard(grid);
     return Row(
       children: [
-        buildBoard(grid),
+        Container(
+          key: _boardKey,
+          child: buildBoard(grid),
+        ),
         Column(
           children: [
             MaterialButton(
@@ -82,8 +87,8 @@ class _BoardState extends State<StatefulWidget> {
 
       columnWidgets.add(Expanded(
           child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: rowWidgets,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: rowWidgets,
       )));
     }
     return columnWidgets;
@@ -105,36 +110,42 @@ class _BoardState extends State<StatefulWidget> {
       case Move.empty:
         //image = Image.asset('assets/images/block.png'); //change to empty
     }
+    
+    //converts global position to local board position and gets tile
+    List<int> getTileFromLocation(Offset o) {
+      RenderBox rb = _boardKey.currentContext.findRenderObject();
+      double boardWidth = rb.size.width;
+      double boardHeight = rb.size.height;
 
+      Offset relativeToBoard = rb.globalToLocal(o);
+
+      double row = relativeToBoard.dy / (boardHeight / grid.rows());
+      double col = relativeToBoard.dx / (boardWidth / grid.cols());
+      return [row.floor(), col.floor()];
+    }
+    
     return AspectRatio(
       aspectRatio: 1.0,
-      /*
       child: GestureDetector(
-        onTap: () {
-          setState(() {
-            grid.move(x, y);
-          });
+        onPanUpdate: (DragUpdateDetails d) {
+          dragLocation = d.globalPosition;
         },
-        /*
         onPanEnd: (DragEndDetails d) {
-          setState() {
-            grid.block(d.)
-          }
-        },
-        */
-        child: image
-      ),
-      */
-      
-      child: MaterialButton(
-        onPressed: () {
           setState(() {
-            grid.move(r, c);
+            List<int> tile = getTileFromLocation(dragLocation);
+            print(tile);
+            grid.block(r, c, tile[0], tile[1]);
           });
         },
+        child: MaterialButton(
+          onPressed: () {
+            setState(() {
+              grid.move(r, c);
+            });
+          },
         child: image,
       ),
-      
+      ),
     );
   }
 }

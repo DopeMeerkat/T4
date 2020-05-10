@@ -1,8 +1,6 @@
 import 'move.dart';
 import 'turn.dart';
 
-//TODO implement history/undo functions
-
 class Grid {
   List<List<Move>> grid; //list of rows (first list is y axis, second is x)
   int inARow;
@@ -121,6 +119,9 @@ class Grid {
       history.add(currentTurn);
       turn++;
       printHistory();
+      if (checkWinner(r, c)) {
+        
+      }
       print(checkWinner(r, c));
       return true;
     }
@@ -128,7 +129,9 @@ class Grid {
   }
 
   bool block(int r1, int c1, int r2, int c2) {
-    if (grid[r1][c1] == Move.empty && grid[r2][c2] == Move.empty) {
+    if (grid[r1][c1] == Move.empty
+        && grid[r2][c2] == Move.empty
+        && ((r2 - r1).abs() == 1) ^ ((c2 - c1).abs() == 1)) {
       grid[r1][c1] = Move.block;
       grid[r2][c2] = Move.block;
 
