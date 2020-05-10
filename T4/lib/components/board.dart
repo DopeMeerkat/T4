@@ -20,16 +20,67 @@ class _BoardState extends State<StatefulWidget> {
   Offset endBlock; //for block moves
   _BoardState(this.grid);
   GlobalKey _boardKey = GlobalKey();
-  
+
   @override
   Widget build(BuildContext context) {
     //return buildBoard(grid);
     return Row(
       children: [
-        Container(
+        MaterialButton(
+          onPressed: () {
+            setState(() => grid.extend(0));
+          },
+          child: Text("left"),
+        ),
+        Column(
+          children: [
+            MaterialButton(
+              onPressed: () {
+                setState(() => grid.extend(2));
+              },
+              child: Text("top"),
+            ),
+            buildBoard(grid),
+            MaterialButton(
+              onPressed: () {
+                setState(() => grid.extend(3));
+              },
+              child: Text("bottom"),
+            ),
+          ]
+        ),
+        MaterialButton(
+          onPressed: () {
+            setState(() => grid.extend(1));
+          },
+          child: Text("right"),
+        ),
+        
+      ],
+    );
+  }
+
+  Widget buildBoard(Grid grid) {
+    //check that this works as non-integer division
+    double aspectRatio = grid.cols() / grid.rows();
+
+    return Expanded(
+      child: Container(
+        child: AspectRatio(
+          //want width/height, so rows/columns
+          aspectRatio: aspectRatio,
           key: _boardKey,
           child: GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            onTapUp: (TapUpDetails d) {
+              print("tapping");
+              setState(() {
+                List<int> tile = getTileFromLocation(d.globalPosition);
+                grid.move(tile[0], tile[1]);
+              });
+            },
             onPanStart: (DragStartDetails d) {
+              print("panning");
               startBlock = d.globalPosition;
             },
             onPanUpdate: (DragUpdateDetails d) {
@@ -39,55 +90,17 @@ class _BoardState extends State<StatefulWidget> {
               setState(() {
                 List<int> startTile = getTileFromLocation(startBlock);
                 List<int> endTile = getTileFromLocation(endBlock);
+                if (startTile == endTile) {
+                  grid.move(startTile[0], startTile[1]);
+                }
                 grid.block(startTile[0], startTile[1], endTile[0], endTile[1]);
               });
             },
-            child: buildBoard(grid),
+            child: Column(
+              children: buildGrid(grid),
+            ),
           ),
         ),
-        Column(
-          children: [
-            MaterialButton(
-              onPressed: () {
-                setState(() => grid.extend(0));
-              },
-              child: Text("left"),
-            ),
-            MaterialButton(
-              onPressed: () {
-                setState(() => grid.extend(1));
-              },
-              child: Text("right"),
-            ),
-            MaterialButton(
-              onPressed: () {
-                setState(() => grid.extend(2));
-              },
-              child: Text("top"),
-            ),
-            MaterialButton(
-              onPressed: () {
-                setState(() => grid.extend(3));
-              },
-              child: Text("bottom"),
-            )
-          ],
-        ),
-      ],
-    );
-  }
-
-
-  Widget buildBoard(Grid grid) {
-    //check that this works as non-integer division
-    double aspectRatio = grid.cols() / grid.rows();
-
-    return AspectRatio(
-      //want width/height, so rows/columns
-      aspectRatio: aspectRatio,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: buildGrid(grid),
       ),
     );
   }
@@ -103,8 +116,8 @@ class _BoardState extends State<StatefulWidget> {
 
       columnWidgets.add(Expanded(
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: rowWidgets,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: rowWidgets,
       )));
     }
     return columnWidgets;
@@ -137,20 +150,28 @@ class _BoardState extends State<StatefulWidget> {
         image = Image.asset('assets/images/block.png');
         break;
       case Move.empty:
-        //image = Image.asset('assets/images/block.png'); //change to empty
+      //image = Image.asset('assets/images/block.png'); //change to empty
     }
-    
-    
+
     return AspectRatio(
       aspectRatio: 1.0,
+      /*
       child: MaterialButton(
-          onPressed: () {
-            setState(() {
-              grid.move(r, c);
-            });
-          },
+        onPressed: () {
+        },
         child: image,
       ),
+      */
+      /*
+      child: InkWell(
+        hoverColor: Color.fromRGBO(226, 226, 226, 1),
+        child: image,
+      ),
+      */
+      child: Container(
+        child: image,
+      ),
+      
     );
   }
 }
