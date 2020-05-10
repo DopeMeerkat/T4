@@ -131,7 +131,8 @@ class Grid {
   bool block(int r1, int c1, int r2, int c2) {
     if (grid[r1][c1] == Move.empty
         && grid[r2][c2] == Move.empty
-        && ((r2 - r1).abs() == 1) ^ ((c2 - c1).abs() == 1)) {
+        && ((r2 - r1).abs() == 1 && (c2 - c1).abs() < 1)
+           ^ ((c2 - c1).abs() == 1 && (r2 - r1).abs() < 1)) {
       grid[r1][c1] = Move.block;
       grid[r2][c2] = Move.block;
 

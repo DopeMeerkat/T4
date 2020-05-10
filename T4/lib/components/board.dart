@@ -23,8 +23,8 @@ class _BoardState extends State<StatefulWidget> {
 
   @override
   Widget build(BuildContext context) {
-    //return buildBoard(grid);
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         MaterialButton(
           onPressed: () {
@@ -33,6 +33,7 @@ class _BoardState extends State<StatefulWidget> {
           child: Text("left"),
         ),
         Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             MaterialButton(
               onPressed: () {
@@ -63,9 +64,19 @@ class _BoardState extends State<StatefulWidget> {
   Widget buildBoard(Grid grid) {
     //check that this works as non-integer division
     double aspectRatio = grid.cols() / grid.rows();
+    MediaQueryData queryData = MediaQuery.of(context);
+    double width = queryData.size.width - 176;
+    double height = queryData.size.height - 152;
+    if (aspectRatio * height > width) {
+      height = width / aspectRatio ;
+    } else {
+      width = height * aspectRatio;
+    }
 
-    return Expanded(
+    return Container(
       child: Container(
+        width: width,
+        height: height,
         child: AspectRatio(
           //want width/height, so rows/columns
           aspectRatio: aspectRatio,
@@ -152,26 +163,11 @@ class _BoardState extends State<StatefulWidget> {
       case Move.empty:
       //image = Image.asset('assets/images/block.png'); //change to empty
     }
-
     return AspectRatio(
       aspectRatio: 1.0,
-      /*
-      child: MaterialButton(
-        onPressed: () {
-        },
-        child: image,
-      ),
-      */
-      /*
-      child: InkWell(
-        hoverColor: Color.fromRGBO(226, 226, 226, 1),
-        child: image,
-      ),
-      */
       child: Container(
         child: image,
       ),
-      
     );
   }
 }
