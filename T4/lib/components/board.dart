@@ -162,6 +162,15 @@ class _BoardState extends State<StatefulWidget> {
     return [row.floor(), col.floor()];
   }
 
+  Offset getLocationFromTile(r, c) {
+    RenderBox rb = _boardKey.currentContext.findRenderObject();
+    double boardWidth = rb.size.width;
+    double boardHeight = rb.size.height;
+    var y = (r + .5) * (boardHeight / grid.rows());
+    var x = (c + .5) * (boardWidth / grid.cols());
+    return rb.localToGlobal(Offset(x, y));
+  }
+
   //use row and col to do logic stuff later
   Widget buildTile(Grid grid, r, c) {
     Image image;

@@ -1,7 +1,17 @@
 import 'package:flutter/material.dart';
 import 'components/board.dart';
+import 'package:firebase/firebase.dart';
 
 void main() {
+  /*
+  initializeApp(
+    apiKey: "AIzaSyCvVp-W_TqDhwIKD0U0XV8-N_1oqfETt8U",
+    authDomain: "YourAuthDomain",
+    databaseURL: "YourDatabaseUrl",
+    projectId: "t4database",
+    storageBucket: "YourStorageBucket"
+  );
+  */
   runApp(MyApp());
 }
 
