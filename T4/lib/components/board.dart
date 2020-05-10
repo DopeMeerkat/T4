@@ -48,15 +48,30 @@ class _BoardState extends State<StatefulWidget> {
               },
               child: Text("bottom"),
             ),
-          ]
+          ],
         ),
-        MaterialButton(
-          onPressed: () {
-            setState(() => grid.extend(1));
-          },
-          child: Text("right"),
-        ),
-        
+        Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+          MaterialButton(
+            onPressed: () {
+              setState(() => grid.undo());
+            },
+            child: Text("undo"),
+          ),
+          MaterialButton(
+            onPressed: () {
+              setState(() => grid.extend(1));
+            },
+            child: Text("right"),
+          ),
+          MaterialButton(
+            onPressed: () {
+              setState(() => grid.reset(3, 3));
+            },
+            child: Text("New Game"),
+          ),
+        ]),
       ],
     );
   }
@@ -65,10 +80,10 @@ class _BoardState extends State<StatefulWidget> {
     //check that this works as non-integer division
     double aspectRatio = grid.cols() / grid.rows();
     MediaQueryData queryData = MediaQuery.of(context);
-    double width = queryData.size.width - 176;
-    double height = queryData.size.height - 152;
+    double width = queryData.size.width - 200;
+    double height = queryData.size.height - 200;
     if (aspectRatio * height > width) {
-      height = width / aspectRatio ;
+      height = width / aspectRatio;
     } else {
       width = height * aspectRatio;
     }
