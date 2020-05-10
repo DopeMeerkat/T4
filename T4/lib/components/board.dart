@@ -25,6 +25,7 @@ class _BoardState extends State<StatefulWidget>
   Offset endBlock; //for block moves
   GlobalKey _boardKey = GlobalKey();
   double r1 = 0, c1 = 0, r2 = 1, c2 = 1;
+  bool lineVisible = false;
 
 
   _BoardState(this.grid);
@@ -45,11 +46,11 @@ class _BoardState extends State<StatefulWidget>
   }
 
   void _startAnimation() {
-    // _controller.stop();
-    // _controller.reset();
     // _controller.repeat(
     //   period: Duration(seconds: 1),
     // );
+    _controller.stop();
+    _controller.reset();
     _controller.forward();
   }
 
@@ -62,8 +63,8 @@ class _BoardState extends State<StatefulWidget>
       c1 = p1.dy;
       r2 = p2.dx;
       c2 = p2.dy;
+      lineVisible = true;
       _startAnimation();
-      // _controller.update
     }
   }
 
@@ -89,7 +90,7 @@ class _BoardState extends State<StatefulWidget>
             ),
             CustomPaint(
               foregroundPainter:
-                  new AnimatedPainter(_controller, r1, c1, r2, c2),
+                  new AnimatedPainter(_controller, r1, c1, r2, c2, lineVisible),
               child: buildBoard(grid),
             ),
             MaterialButton(
@@ -116,11 +117,8 @@ class _BoardState extends State<StatefulWidget>
           ),
           MaterialButton(
             onPressed: () {
-              // _startAnimation();
-              setState(() {
-                grid.reset(3, 3);
-                dispose();
-              });
+              setState(() => grid.reset(3, 3));
+              lineVisible = false;
             },
             child: Text("New Game"),
           ),
@@ -128,7 +126,6 @@ class _BoardState extends State<StatefulWidget>
       ],
     );
   }
-
 
   Widget buildBoard(Grid grid) {
     //check that this works as non-integer division
@@ -230,6 +227,15 @@ class _BoardState extends State<StatefulWidget>
   //use row and col to do logic stuff later
   Widget buildTile(Grid grid, r, c) {
     Image image;
+    BoxBorder border = Border();
+    BorderSide borderStyle = BorderSide(width: 1, color: Colors.black26);
+    BoxBorder bLeft = Border(left: borderStyle);
+    BoxBorder bTop = Border(top: borderStyle);
+    if (r > 0) border = border.add(bTop);
+    if (c > 0) border = border.add(bLeft);
+    if (r == 0 && c == 0) border = Border();
+
+    // border = border.add(border2);
     switch (grid.grid[r][c]) {
       case Move.o:
         image = Image.asset('assets/images/o.png');
@@ -246,6 +252,10 @@ class _BoardState extends State<StatefulWidget>
     return AspectRatio(
       aspectRatio: 1.0,
       child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: border,
+        ),
         child: image,
       ),
     );

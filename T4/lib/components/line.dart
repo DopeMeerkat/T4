@@ -6,7 +6,9 @@ import 'package:flutter/rendering.dart';
 class AnimatedPainter extends CustomPainter {
   final Animation<double> _animation;
   double r1, c1, r2, c2;
-  AnimatedPainter(this._animation, this.r1, this.c1, this.r2, this.c2)
+  bool visible;
+  AnimatedPainter(
+      this._animation, this.r1, this.c1, this.r2, this.c2, this.visible)
       : super(repaint: _animation);
 
   Path _createPath(Size size) {
@@ -32,7 +34,7 @@ class AnimatedPainter extends CustomPainter {
     paint.style = PaintingStyle.stroke;
     paint.strokeWidth = 10.0; //currently hardCoded
 
-    canvas.drawPath(extractPath, paint);
+    if (visible) canvas.drawPath(extractPath, paint);
   }
 
   @override
