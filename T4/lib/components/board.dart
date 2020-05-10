@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 
 import 'grid.dart';
 import 'move.dart';
+import 'line.dart';
 
 class Board extends StatefulWidget {
   final Grid grid = Grid.normal();
@@ -14,12 +15,53 @@ class Board extends StatefulWidget {
   _BoardState createState() => _BoardState(grid);
 }
 
-class _BoardState extends State<StatefulWidget> {
+class _BoardState extends State<StatefulWidget>
+    with SingleTickerProviderStateMixin {
+  AnimationController _controller;
   Grid grid;
   Offset startBlock;
   Offset endBlock; //for block moves
   _BoardState(this.grid);
   GlobalKey _boardKey = GlobalKey();
+  double r1 = 0, c1 = 0, r2 = 1, c2 = 1;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = new AnimationController(
+      duration: const Duration(seconds: 1),
+      vsync: this,
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _startAnimation() {
+    // _controller.stop();
+    // _controller.reset();
+    // _controller.repeat(
+    //   period: Duration(seconds: 1),
+    // );
+    _controller.forward();
+  }
+
+  void checkWin(int r, int c) {
+    List<int> endpoints = grid.checkWinner(r, c);
+    if (endpoints.isNotEmpty) {
+      Offset p1 = getLocationFromTile(endpoints[0], endpoints[1]);
+      Offset p2 = getLocationFromTile(endpoints[2], endpoints[3]);
+      r1 = p1.dx;
+      c1 = p1.dy;
+      r2 = p2.dx;
+      c2 = p2.dy;
+      _startAnimation();
+      // _controller.update
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +83,11 @@ class _BoardState extends State<StatefulWidget> {
               },
               child: Text("top"),
             ),
-            buildBoard(grid),
+            CustomPaint(
+              foregroundPainter:
+                  new AnimatedPainter(_controller, r1, c1, r2, c2),
+              child: buildBoard(grid),
+            ),
             MaterialButton(
               onPressed: () {
                 setState(() => grid.extend(3));
@@ -50,14 +96,13 @@ class _BoardState extends State<StatefulWidget> {
             ),
           ],
         ),
-        Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
+        Column(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           MaterialButton(
             onPressed: () {
               setState(() => grid.undo());
             },
-            child: Text("undo"),
+            // child: Text("undo"),
+            child: new Icon(Icons.undo),
           ),
           MaterialButton(
             onPressed: () {
@@ -67,6 +112,7 @@ class _BoardState extends State<StatefulWidget> {
           ),
           MaterialButton(
             onPressed: () {
+              // _startAnimation();
               setState(() => grid.reset(3, 3));
             },
             child: Text("New Game"),
@@ -75,6 +121,8 @@ class _BoardState extends State<StatefulWidget> {
       ],
     );
   }
+
+  AnimatedPainter painter(_controller) {}
 
   Widget buildBoard(Grid grid) {
     //check that this works as non-integer division
@@ -100,9 +148,11 @@ class _BoardState extends State<StatefulWidget> {
             behavior: HitTestBehavior.translucent,
             onTapUp: (TapUpDetails d) {
               print("tapping");
+              // _startAnimation();
               setState(() {
                 List<int> tile = getTileFromLocation(d.globalPosition);
                 grid.move(tile[0], tile[1]);
+                checkWin(tile[0], tile[1]);
               });
             },
             onPanStart: (DragStartDetails d) {
@@ -160,6 +210,15 @@ class _BoardState extends State<StatefulWidget> {
     double row = relativeToBoard.dy / (boardHeight / grid.rows());
     double col = relativeToBoard.dx / (boardWidth / grid.cols());
     return [row.floor(), col.floor()];
+  }
+
+  Offset getLocationFromTile(r, c) {
+    RenderBox rb = _boardKey.currentContext.findRenderObject();
+    double boardWidth = rb.size.width;
+    double boardHeight = rb.size.height;
+    var y = (r + .5) * (boardHeight / grid.rows());
+    var x = (c + .5) * (boardWidth / grid.cols());
+    return Offset(x, y);
   }
 
   //use row and col to do logic stuff later
