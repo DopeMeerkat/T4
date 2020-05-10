@@ -149,6 +149,7 @@ class Grid {
 
   void undo() {
     Turn recent = history.removeLast();
+    if (turn > 0) turn--;
     switch (recent.type) {
       case MoveType.extend:
         switch (recent.params[0]) {
@@ -178,6 +179,17 @@ class Grid {
         grid[recent.params[2]][recent.params[3]] = Move.empty;
         break;
     }
+  }
+
+  void reset(int r, int c) {
+    history.clear();
+    grid =
+        List.generate(r, (i) => new List.filled(c, Move.empty, growable: true));
+    setTurn(0);
+    // var len = history.length;
+    // for (int i = 0; i < len; i++) {
+    //   undo();
+    // }
   }
 
   void printHistory() {

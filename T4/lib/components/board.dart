@@ -77,6 +77,12 @@ class _BoardState extends State<StatefulWidget> {
               },
               child: Text("undo"),
             ),
+            MaterialButton(
+              onPressed: () {
+                setState(() => grid.reset(3, 3));
+              },
+              child: Text("New Game"),
+            ),
           ],
         ),
       ],
