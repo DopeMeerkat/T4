@@ -26,45 +26,21 @@ class _BoardState extends State<StatefulWidget> {
     //return buildBoard(grid);
     return Row(
       children: [
-        Container(
-          key: _boardKey,
-          child: GestureDetector(
-            onPanStart: (DragStartDetails d) {
-              startBlock = d.globalPosition;
-            },
-            onPanUpdate: (DragUpdateDetails d) {
-              endBlock = d.globalPosition;
-            },
-            onPanEnd: (DragEndDetails d) {
-              setState(() {
-                List<int> startTile = getTileFromLocation(startBlock);
-                List<int> endTile = getTileFromLocation(endBlock);
-                grid.block(startTile[0], startTile[1], endTile[0], endTile[1]);
-              });
-            },
-            child: buildBoard(grid),
-          ),
+        MaterialButton(
+          onPressed: () {
+            setState(() => grid.extend(0));
+          },
+          child: Text("left"),
         ),
         Column(
           children: [
-            MaterialButton(
-              onPressed: () {
-                setState(() => grid.extend(0));
-              },
-              child: Text("left"),
-            ),
-            MaterialButton(
-              onPressed: () {
-                setState(() => grid.extend(1));
-              },
-              child: Text("right"),
-            ),
             MaterialButton(
               onPressed: () {
                 setState(() => grid.extend(2));
               },
               child: Text("top"),
             ),
+            buildBoard(grid),
             MaterialButton(
               onPressed: () {
                 setState(() => grid.extend(3));
@@ -85,6 +61,12 @@ class _BoardState extends State<StatefulWidget> {
             ),
           ],
         ),
+        MaterialButton(
+          onPressed: () {
+            setState(() => grid.extend(1));
+          },
+          child: Text("right"),
+        ),
       ],
     );
   }
@@ -93,12 +75,43 @@ class _BoardState extends State<StatefulWidget> {
     //check that this works as non-integer division
     double aspectRatio = grid.cols() / grid.rows();
 
-    return AspectRatio(
-      //want width/height, so rows/columns
-      aspectRatio: aspectRatio,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: buildGrid(grid),
+    return Expanded(
+      child: Container(
+        child: AspectRatio(
+          //want width/height, so rows/columns
+          aspectRatio: aspectRatio,
+          key: _boardKey,
+          child: GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            onTapUp: (TapUpDetails d) {
+              print("tapping");
+              setState(() {
+                List<int> tile = getTileFromLocation(d.globalPosition);
+                grid.move(tile[0], tile[1]);
+              });
+            },
+            onPanStart: (DragStartDetails d) {
+              print("panning");
+              startBlock = d.globalPosition;
+            },
+            onPanUpdate: (DragUpdateDetails d) {
+              endBlock = d.globalPosition;
+            },
+            onPanEnd: (DragEndDetails d) {
+              setState(() {
+                List<int> startTile = getTileFromLocation(startBlock);
+                List<int> endTile = getTileFromLocation(endBlock);
+                if (startTile == endTile) {
+                  grid.move(startTile[0], startTile[1]);
+                }
+                grid.block(startTile[0], startTile[1], endTile[0], endTile[1]);
+              });
+            },
+            child: Column(
+              children: buildGrid(grid),
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -153,12 +166,20 @@ class _BoardState extends State<StatefulWidget> {
 
     return AspectRatio(
       aspectRatio: 1.0,
+      /*
       child: MaterialButton(
         onPressed: () {
-          setState(() {
-            grid.move(r, c);
-          });
         },
+        child: image,
+      ),
+      */
+      /*
+      child: InkWell(
+        hoverColor: Color.fromRGBO(226, 226, 226, 1),
+        child: image,
+      ),
+      */
+      child: Container(
         child: image,
       ),
     );
