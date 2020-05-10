@@ -100,6 +100,7 @@ class _BoardState extends State<StatefulWidget>
         Column(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           MaterialButton(
             onPressed: () {
+              lineVisible = false;
               setState(() => grid.undo());
             },
             // child: Text("undo"),
@@ -231,7 +232,6 @@ class _BoardState extends State<StatefulWidget>
     if (c > 0) border = border.add(bLeft);
     if (r == 0 && c == 0) border = Border();
 
-    // border = border.add(border2);
     switch (grid.grid[r][c]) {
       case Move.o:
         image = Image.asset('assets/images/o.png');

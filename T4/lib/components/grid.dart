@@ -91,7 +91,8 @@ class Grid {
       } else if (hor < inARow) {
         hor = 0;
         hStart = i + 1;
-      }
+      } else
+        break;
 
       if (i < rows && grid[i][c] == player) //find vertical
       {
@@ -100,7 +101,8 @@ class Grid {
       } else if (vert < inARow) {
         vert = 0;
         vStart = i + 1;
-      }
+      } else
+        break;
 
       // find backslash
       if (bsrs + i < rows &&
@@ -111,7 +113,8 @@ class Grid {
       } else if (bSlash < inARow) {
         bSlash = 0;
         bsStart = i + 1;
-      }
+      } else
+        break;
 
       //find slash
       if (srs + i < rows && scs - i >= 0 && grid[srs + i][scs - i] == player) {
@@ -120,7 +123,8 @@ class Grid {
       } else if (slash < inARow) {
         slash = 0;
         sStart = i + 1;
-      }
+      } else
+        break;
     }
 
     // return (vert >= inARow ||
@@ -174,10 +178,10 @@ class Grid {
   }
 
   bool block(int r1, int c1, int r2, int c2) {
-    if (grid[r1][c1] == Move.empty
-        && grid[r2][c2] == Move.empty
-        && ((r2 - r1).abs() == 1 && (c2 - c1).abs() < 1)
-           ^ ((c2 - c1).abs() == 1 && (r2 - r1).abs() < 1)) {
+    if (grid[r1][c1] == Move.empty &&
+        grid[r2][c2] == Move.empty &&
+        ((r2 - r1).abs() == 1 && (c2 - c1).abs() < 1) ^
+            ((c2 - c1).abs() == 1 && (r2 - r1).abs() < 1)) {
       grid[r1][c1] = Move.block;
       grid[r2][c2] = Move.block;
 
