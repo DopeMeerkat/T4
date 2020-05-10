@@ -20,7 +20,7 @@ class _BoardState extends State<StatefulWidget> {
   Offset endBlock; //for block moves
   _BoardState(this.grid);
   GlobalKey _boardKey = GlobalKey();
-  
+
   @override
   Widget build(BuildContext context) {
     //return buildBoard(grid);
@@ -70,13 +70,18 @@ class _BoardState extends State<StatefulWidget> {
                 setState(() => grid.extend(3));
               },
               child: Text("bottom"),
-            )
+            ),
+            MaterialButton(
+              onPressed: () {
+                setState(() => grid.undo());
+              },
+              child: Text("undo"),
+            ),
           ],
         ),
       ],
     );
   }
-
 
   Widget buildBoard(Grid grid) {
     //check that this works as non-integer division
@@ -103,8 +108,8 @@ class _BoardState extends State<StatefulWidget> {
 
       columnWidgets.add(Expanded(
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: rowWidgets,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: rowWidgets,
       )));
     }
     return columnWidgets;
@@ -137,18 +142,17 @@ class _BoardState extends State<StatefulWidget> {
         image = Image.asset('assets/images/block.png');
         break;
       case Move.empty:
-        //image = Image.asset('assets/images/block.png'); //change to empty
+      //image = Image.asset('assets/images/block.png'); //change to empty
     }
-    
-    
+
     return AspectRatio(
       aspectRatio: 1.0,
       child: MaterialButton(
-          onPressed: () {
-            setState(() {
-              grid.move(r, c);
-            });
-          },
+        onPressed: () {
+          setState(() {
+            grid.move(r, c);
+          });
+        },
         child: image,
       ),
     );

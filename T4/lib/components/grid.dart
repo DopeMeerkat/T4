@@ -119,9 +119,7 @@ class Grid {
       history.add(currentTurn);
       turn++;
       printHistory();
-      if (checkWinner(r, c)) {
-        
-      }
+      if (checkWinner(r, c)) {}
       print(checkWinner(r, c));
       return true;
     }
@@ -129,9 +127,9 @@ class Grid {
   }
 
   bool block(int r1, int c1, int r2, int c2) {
-    if (grid[r1][c1] == Move.empty
-        && grid[r2][c2] == Move.empty
-        && ((r2 - r1).abs() == 1) ^ ((c2 - c1).abs() == 1)) {
+    if (grid[r1][c1] == Move.empty &&
+        grid[r2][c2] == Move.empty &&
+        ((r2 - r1).abs() == 1) ^ ((c2 - c1).abs() == 1)) {
       grid[r1][c1] = Move.block;
       grid[r2][c2] = Move.block;
 
@@ -147,6 +145,39 @@ class Grid {
       return true;
     }
     return false;
+  }
+
+  void undo() {
+    Turn recent = history.removeLast();
+    switch (recent.type) {
+      case MoveType.extend:
+        switch (recent.params[0]) {
+          // 0 - Left
+          // 1 - Right
+          // 2 - Top
+          // 3 - Bot
+          case 0:
+            grid.forEach((row) => row.removeAt(0));
+            break;
+          case 1:
+            grid.forEach((row) => row.removeLast());
+            break;
+          case 2:
+            grid.removeAt(0);
+            break;
+          case 3:
+            grid.removeLast();
+            break;
+        }
+        break;
+      case MoveType.move:
+        grid[recent.params[0]][recent.params[1]] = Move.empty;
+        break;
+      case MoveType.block:
+        grid[recent.params[0]][recent.params[1]] = Move.empty;
+        grid[recent.params[2]][recent.params[3]] = Move.empty;
+        break;
+    }
   }
 
   void printHistory() {
