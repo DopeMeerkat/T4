@@ -1,28 +1,34 @@
+/*
 import 'turn.dart';
 import 'grid.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class History {
+class Game {
   Grid grid;
   final db = Firestore.instance.collection('game');
   //List<Turn> moveList;
   int turn;
 
-  History(this.grid) {
+  Game() {
+    grid = Grid.normal(this);
     listen();
     //moveList = [];
-    turn = 1;
+    turn = 0;
+    print("i have been created");
+  }
+  sayHi() {
+    print("hello");
   }
 
   reset() {
     //moveList = [];
+    grid.reset(3, 3);
     db.getDocuments().then((snapshot) {
       for (DocumentSnapshot ds in snapshot.documents){
         ds.reference.delete();
       }
     });
-    
-    turn = 1;
+    turn = 0;
   }
 
   void undo() {
@@ -41,6 +47,7 @@ class History {
     }
     */
   }
+
   int getTurn() {
     return turn;
   }
@@ -54,7 +61,7 @@ class History {
   }
 
   void removeLastFromDB() {
-    db.document((turn - 1).toString()).delete();
+    db.document(turn.toString()).delete();
   }
 
   void addExtend(int dir) {
@@ -99,11 +106,27 @@ class History {
         playMoveFromDB(move.document.data);
         break;
       case DocumentChangeType.modified:
-        //print("Document modified");
+        print("Document Modified: error");
         break;
       case DocumentChangeType.removed:
-        turn--;
         undoMoveFromDB(move.document.data);
+        //moveList.removeLast();
+        break;
+    }
+  }
+  undoMoveFromDB(Map<String, dynamic> move) {
+    int turnNum = move["turnNum"];
+    List params = move["params"];
+    
+    switch (move["type"]) {
+      case "TurnType.move":
+        grid.undo(Turn(turnNum, TurnType.move, params));
+        break;
+      case "TurnType.block":
+        grid.undo(Turn(turnNum, TurnType.block, params));
+        break;
+      case "TurnType.extend":
+        grid.undo(Turn(turnNum, TurnType.extend, params));;
         break;
     }
   }
@@ -111,9 +134,11 @@ class History {
   //TODO add move to list
   void playMoveFromDB(Map<String, dynamic> move) {
     List params = move["params"];
-    
+    print("playing move");
+    print(move);
     switch (move["type"]) {
       case "TurnType.move":
+        print("in here");
         grid.move(params[0], params[1]);
         break;
       case "TurnType.block":
@@ -125,13 +150,11 @@ class History {
     }
   }
 
-  undoMoveFromDB(Map<String, dynamic> move) {
-    grid.undo(Turn.fromJson(move));
-  }
-
   String toString() {
-    String history = "";
+
+    //String history = "";
     //moveList.forEach((move) => history += move.toString());
-    return history;
+    return "I am a game";
   }
 }
+*/

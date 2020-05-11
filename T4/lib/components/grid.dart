@@ -178,8 +178,7 @@ class Grid {
     return false;
   }
 
-  void undo() {
-    Turn recent = history.undo();
+  void undo(Turn recent) {
     if (recent == null) {
       return;
     }
@@ -215,13 +214,13 @@ class Grid {
   }
 
   void reset(int r, int c) {
-    history.clear();
+    history.reset();
     grid =
         List.generate(r, (i) => new List.filled(c, Piece.empty, growable: true));
   }
 
   void printHistory() {
-    print("Printing History:");
-    print(history.toString());
+    //print("Printing History:");
+    //print(history.toString());
   }
 }

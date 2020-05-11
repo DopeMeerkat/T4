@@ -174,7 +174,7 @@ class _BoardState extends State<StatefulWidget>
               Btn(
                 onTap: () {
                   lineVisible = false;
-                  setState(() => grid.undo());
+                  setState(() => grid.history.undo());
                 },
                 height: 40,
                 width: 40,
@@ -201,7 +201,8 @@ class _BoardState extends State<StatefulWidget>
               ),
               Btn(
                 onTap: () {
-                  setState(() => grid.reset(3, 3));
+                  setState(() => grid.history.reset());
+                  //setState(() => grid.reset(3, 3));
                   lineVisible = false;
                 },
                 height: 40,
