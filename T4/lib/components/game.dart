@@ -8,7 +8,8 @@ class Game {
   //List<Turn> moveList;
   int turn;
 
-  Game(this.grid) {
+  Game() {
+    grid = Grid.normal(this);
     listen();
     //moveList = [];
     turn = 1;

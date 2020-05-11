@@ -7,20 +7,22 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'grid.dart';
 import 'piece.dart';
 import 'line.dart';
+import 'game.dart';
 
 class Board extends StatefulWidget {
-  final Grid grid = Grid.normal();
+  final Game game = Game();
 
   Board(); //implement later (with player names?)
 
   @override
-  _BoardState createState() => _BoardState(grid);
+  _BoardState createState() => _BoardState(game);
 }
 
 class _BoardState extends State<StatefulWidget>
     with SingleTickerProviderStateMixin {
 
   AnimationController _controller;
+  Game game;
   Grid grid;
   Offset startBlock;
   Offset endBlock; //for block moves
@@ -29,11 +31,12 @@ class _BoardState extends State<StatefulWidget>
   bool lineVisible;
   
 
-  _BoardState(this.grid) {
+  _BoardState(this.game) {
     r1 = c1 = 0;
     r2 = c2 = 0;
     width = 10.0;
     lineVisible = false;
+    grid = game.grid;
 
     //update on db update
     
@@ -100,7 +103,7 @@ class _BoardState extends State<StatefulWidget>
           Btn(
             onTap: () {
               //setState(() => grid.extend(2));
-              setState(() => grid.game.addExtend(2));
+              setState(() => game.addExtend(2));
             },
             height: 40,
             width: 250,
@@ -120,7 +123,7 @@ class _BoardState extends State<StatefulWidget>
               Btn(
                 onTap: () {
                   //setState(() => grid.extend(0));
-                  setState(() => grid.game.addExtend(0));
+                  setState(() => game.addExtend(0));
                 },
                 height: 250,
                 width: 40,
@@ -152,7 +155,7 @@ class _BoardState extends State<StatefulWidget>
               Btn(
                 onTap: () {
                   //setState(() => grid.extend(1));
-                  setState(() => grid.game.addExtend(1));
+                  setState(() => game.addExtend(1));
                 },
                 height: 250,
                 width: 40,
@@ -174,7 +177,7 @@ class _BoardState extends State<StatefulWidget>
               Btn(
                 onTap: () {
                   lineVisible = false;
-                  setState(() => grid.game.undo());
+                  setState(() => game.undo());
                 },
                 height: 40,
                 width: 40,
@@ -185,7 +188,7 @@ class _BoardState extends State<StatefulWidget>
               Btn(
                 onTap: () {
                   //setState(() => grid.extend(3));
-                  setState(() => grid.game.addExtend(3));
+                  setState(() => game.addExtend(3));
                 },
                 height: 40,
                 width: 250,
@@ -201,7 +204,7 @@ class _BoardState extends State<StatefulWidget>
               ),
               Btn(
                 onTap: () {
-                  setState(() => grid.game.reset());
+                  setState(() => game.reset());
                   //setState(() => grid.reset(3, 3));
                   lineVisible = false;
                 },
@@ -246,7 +249,7 @@ class _BoardState extends State<StatefulWidget>
               setState(() {
                 List<int> tile = getTileFromLocation(d.globalPosition);
                 //grid.move(tile[0], tile[1]);
-                grid.game.addMove(tile[0], tile[1]);
+                game.addMove(tile[0], tile[1]);
                 checkWin(tile[0], tile[1]);
               });
             },
@@ -263,10 +266,10 @@ class _BoardState extends State<StatefulWidget>
                 List<int> endTile = getTileFromLocation(endBlock);
                 if (startTile == endTile) {
                   //grid.move(startTile[0], startTile[1]);
-                  grid.game.addMove(startTile[0], startTile[1]);
+                  game.addMove(startTile[0], startTile[1]);
                 } else {
                   //grid.block(startTile[0], startTile[1], endTile[0], endTile[1]);
-                  grid.game.addBlock(startTile[0], startTile[1], endTile[0], endTile[1]);
+                  game.addBlock(startTile[0], startTile[1], endTile[0], endTile[1]);
                 }
               });
             },

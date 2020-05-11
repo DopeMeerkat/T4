@@ -1,6 +1,6 @@
 import 'piece.dart';
 import 'turn.dart';
-import 'history.dart';
+import 'game.dart';
 
 class Grid {
   List<List<Piece>> grid; //list of rows (first list is y axis, second is x)
@@ -9,17 +9,15 @@ class Grid {
 
   List<Piece> player;
 
-  Grid(row, col, this.inARow) {
+  Grid(this.game, row, col, this.inARow) {
     grid = List.generate(
         row, (i) => new List.filled(col, Piece.empty, growable: true));
     player = List<Piece>();
     player.add(Piece.x);
     player.add(Piece.o);
-
-    game = Game(this);
   }
 
-  Grid.normal() : this(3, 3, 3);
+  Grid.normal(Game game) : this(game, 3, 3, 3);
 
   int rows() {
     return grid.length;
