@@ -24,7 +24,7 @@ class _BoardState extends State<StatefulWidget>
   Offset startBlock;
   Offset endBlock; //for block moves
   GlobalKey _boardKey = GlobalKey();
-  double r1 = 0, c1 = 0, r2 = 1, c2 = 1;
+  double r1 = 0, c1 = 0, r2 = 1, c2 = 1, width = 10.0;
   bool lineVisible = false;
 
 
@@ -63,6 +63,11 @@ class _BoardState extends State<StatefulWidget>
       c1 = p1.dy;
       r2 = p2.dx;
       c2 = p2.dy;
+      int max = grid.grid.length;
+      if (grid.grid[0].length > grid.grid.length) max = grid.grid[0].length;
+
+      width = 30 / max;
+      if (width == 0) width = 1;
       lineVisible = true;
       _startAnimation();
     }
@@ -112,7 +117,7 @@ class _BoardState extends State<StatefulWidget>
               ),
               CustomPaint(
                 foregroundPainter: new AnimatedPainter(
-                    _controller, r1, c1, r2, c2, lineVisible),
+                    _controller, r1, c1, r2, c2, width, lineVisible),
                 child: Container(
                   decoration: BoxDecoration(
                     boxShadow: [
