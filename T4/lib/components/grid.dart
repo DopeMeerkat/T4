@@ -1,5 +1,6 @@
 import 'piece.dart';
 import 'turn.dart';
+import 'online_game.dart';
 import 'game.dart';
 
 class Grid {
@@ -212,7 +213,6 @@ class Grid {
   }
 
   void reset(int r, int c) {
-    game.reset();
     grid =
         List.generate(r, (i) => new List.filled(c, Piece.empty, growable: true));
   }

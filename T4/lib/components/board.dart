@@ -8,9 +8,11 @@ import 'grid.dart';
 import 'piece.dart';
 import 'line.dart';
 import 'game.dart';
+import 'online_game.dart';
+import 'offline_game.dart';
 
 class Board extends StatefulWidget {
-  final Game game = Game();
+  final Game game = OfflineGame();
 
   Board(); //implement later (with player names?)
 
@@ -103,7 +105,7 @@ class _BoardState extends State<StatefulWidget>
           Btn(
             onTap: () {
               //setState(() => grid.extend(2));
-              setState(() => game.addExtend(2));
+              setState(() => game.extend(2));
             },
             height: 40,
             width: 250,
@@ -123,7 +125,7 @@ class _BoardState extends State<StatefulWidget>
               Btn(
                 onTap: () {
                   //setState(() => grid.extend(0));
-                  setState(() => game.addExtend(0));
+                  setState(() => game.extend(0));
                 },
                 height: 250,
                 width: 40,
@@ -155,7 +157,7 @@ class _BoardState extends State<StatefulWidget>
               Btn(
                 onTap: () {
                   //setState(() => grid.extend(1));
-                  setState(() => game.addExtend(1));
+                  setState(() => game.extend(1));
                 },
                 height: 250,
                 width: 40,
@@ -188,7 +190,7 @@ class _BoardState extends State<StatefulWidget>
               Btn(
                 onTap: () {
                   //setState(() => grid.extend(3));
-                  setState(() => game.addExtend(3));
+                  setState(() => game.extend(3));
                 },
                 height: 40,
                 width: 250,
@@ -249,7 +251,7 @@ class _BoardState extends State<StatefulWidget>
               setState(() {
                 List<int> tile = getTileFromLocation(d.globalPosition);
                 //grid.move(tile[0], tile[1]);
-                game.addMove(tile[0], tile[1]);
+                game.move(tile[0], tile[1]);
                 checkWin(tile[0], tile[1]);
               });
             },
@@ -266,10 +268,10 @@ class _BoardState extends State<StatefulWidget>
                 List<int> endTile = getTileFromLocation(endBlock);
                 if (startTile == endTile) {
                   //grid.move(startTile[0], startTile[1]);
-                  game.addMove(startTile[0], startTile[1]);
+                  game.move(startTile[0], startTile[1]);
                 } else {
                   //grid.block(startTile[0], startTile[1], endTile[0], endTile[1]);
-                  game.addBlock(startTile[0], startTile[1], endTile[0], endTile[1]);
+                  game.block(startTile[0], startTile[1], endTile[0], endTile[1]);
                 }
               });
             },
