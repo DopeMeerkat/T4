@@ -1,50 +1,25 @@
-import 'move.dart';
+import 'piece.dart';
 import 'turn.dart';
+import 'history.dart';
 
 class Grid {
-  List<List<Move>> grid; //list of rows (first list is y axis, second is x)
+  List<List<Piece>> grid; //list of rows (first list is y axis, second is x)
   int inARow;
-  List<Turn> history;
+  History history;
 
-  int turn;
-  List<Move> player;
-
-  
-  Map<String, dynamic> toJson() {
-    //var jsonGrid = [];
-
-    var jsonHistory = [];
-    history.forEach((h) => jsonHistory.add(h.toJson()));
-
-    var jsonPlayer = [];
-    player.forEach((m) => jsonPlayer.add(m.index));
-
-    return {
-      //'grid': grid, add grid later
-      'inARow': inARow,
-      'history': history,
-      'turn': turn,
-      'player': jsonPlayer
-    };
-  }
-
+  List<Piece> player;
 
   Grid(row, col, this.inARow) {
     grid = List.generate(
-        row, (i) => new List.filled(col, Move.empty, growable: true));
-    setTurn(0);
-    player = List<Move>();
-    player.add(Move.x);
-    player.add(Move.o);
+        row, (i) => new List.filled(col, Piece.empty, growable: true));
+    player = List<Piece>();
+    player.add(Piece.x);
+    player.add(Piece.o);
 
-    history = List<Turn>();
+    history = History();
   }
 
   Grid.normal() : this(3, 3, 3);
-
-  void setTurn(int _turn) {
-    turn = _turn;
-  }
 
   int rows() {
     return grid.length;
@@ -61,23 +36,20 @@ class Grid {
   void extend(int dir) {
     switch (dir) {
       case 0:
-        grid.forEach((row) => row.insert(0, Move.empty));
+        grid.forEach((row) => row.insert(0, Piece.empty));
         break;
       case 1:
-        grid.forEach((row) => row.add(Move.empty));
+        grid.forEach((row) => row.add(Piece.empty));
         break;
       case 2:
-        grid.insert(0, List<Move>.filled(cols(), Move.empty, growable: true));
+        grid.insert(0, List<Piece>.filled(cols(), Piece.empty, growable: true));
         break;
       case 3:
-        grid.add(List<Move>.filled(cols(), Move.empty, growable: true));
+        grid.add(List<Piece>.filled(cols(), Piece.empty, growable: true));
         break;
     }
-    List<int> params = List<int>();
-    params.add(dir);
-    Turn currentTurn = new Turn(turn, MoveType.extend, params);
-    history.add(currentTurn);
-    turn++;
+
+    history.addExtend(dir);
   }
 
   List<int> checkWinner(int r, c) {
@@ -180,15 +152,9 @@ class Grid {
   }
 
   bool move(int r, int c) {
-    if (grid[r][c] == Move.empty) {
-      grid[r][c] = player[turn % 2];
-
-      List<int> params = List<int>();
-      params.add(r);
-      params.add(c);
-      Turn currentTurn = new Turn(turn, MoveType.move, params);
-      history.add(currentTurn);
-      turn++;
+    if (grid[r][c] == Piece.empty) {
+      grid[r][c] = player[history.turn % 2];
+      history.addMove(r, c);
       printHistory();
       // if (checkWinner(r, c)) {}
       print(checkWinner(r, c));
@@ -198,32 +164,27 @@ class Grid {
   }
 
   bool block(int r1, int c1, int r2, int c2) {
-    if (grid[r1][c1] == Move.empty &&
-        grid[r2][c2] == Move.empty &&
+    if (grid[r1][c1] == Piece.empty &&
+        grid[r2][c2] == Piece.empty &&
         ((r2 - r1).abs() == 1 && (c2 - c1).abs() < 1) ^
             ((c2 - c1).abs() == 1 && (r2 - r1).abs() < 1)) {
-      grid[r1][c1] = Move.block;
-      grid[r2][c2] = Move.block;
+      grid[r1][c1] = Piece.block;
+      grid[r2][c2] = Piece.block;
 
-      List<int> params = List<int>();
-      params.add(r1);
-      params.add(c1);
-      params.add(r2);
-      params.add(c2);
-      Turn currentTurn = new Turn(turn, MoveType.block, params);
-      history.add(currentTurn);
+      history.addBlock(r1, c1, r2, c2);
 
-      turn++;
       return true;
     }
     return false;
   }
 
   void undo() {
-    Turn recent = history.removeLast();
-    if (turn > 0) turn--;
+    Turn recent = history.undo();
+    if (recent == null) {
+      return;
+    }
     switch (recent.type) {
-      case MoveType.extend:
+      case TurnType.extend:
         switch (recent.params[0]) {
           // 0 - Left
           // 1 - Right
@@ -243,12 +204,12 @@ class Grid {
             break;
         }
         break;
-      case MoveType.move:
-        grid[recent.params[0]][recent.params[1]] = Move.empty;
+      case TurnType.move:
+        grid[recent.params[0]][recent.params[1]] = Piece.empty;
         break;
-      case MoveType.block:
-        grid[recent.params[0]][recent.params[1]] = Move.empty;
-        grid[recent.params[2]][recent.params[3]] = Move.empty;
+      case TurnType.block:
+        grid[recent.params[0]][recent.params[1]] = Piece.empty;
+        grid[recent.params[2]][recent.params[3]] = Piece.empty;
         break;
     }
   }
@@ -256,17 +217,11 @@ class Grid {
   void reset(int r, int c) {
     history.clear();
     grid =
-        List.generate(r, (i) => new List.filled(c, Move.empty, growable: true));
-    setTurn(0);
-    // var len = history.length; //lmaoooo
-    // for (int i = 0; i < len; i++) {
-    //   undo();
-    // }
+        List.generate(r, (i) => new List.filled(c, Piece.empty, growable: true));
   }
 
   void printHistory() {
     print("Printing History:");
-    history.forEach((element) => element.printTurn());
+    print(history.toString());
   }
-
 }

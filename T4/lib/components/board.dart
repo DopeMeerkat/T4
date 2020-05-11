@@ -5,7 +5,7 @@ import 'package:T4/components/btn.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'grid.dart';
-import 'move.dart';
+import 'piece.dart';
 import 'line.dart';
 
 class Board extends StatefulWidget {
@@ -308,16 +308,16 @@ class _BoardState extends State<StatefulWidget>
     if (r == 0 && c == 0) border = Border();
 
     switch (grid.grid[r][c]) {
-      case Move.o:
+      case Piece.o:
         image = Image.asset('assets/images/o.png');
         break;
-      case Move.x:
+      case Piece.x:
         image = Image.asset('assets/images/x.png');
         break;
-      case Move.block:
+      case Piece.block:
         image = Image.asset('assets/images/block.png');
         break;
-      case Move.empty:
+      case Piece.empty:
       //image = Image.asset('assets/images/block.png'); //change to empty
     }
     return AspectRatio(
