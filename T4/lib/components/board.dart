@@ -41,13 +41,13 @@ class _BoardState extends State<StatefulWidget>
     grid = game.grid;
 
     //update on db update
-    
-    Firestore.instance.collection('game').snapshots().listen((event) {
-        event.documentChanges.forEach((change) {
-          setState(() {});
-        });
-    });
-    
+    if (game.runtimeType == OnlineGame) {
+      Firestore.instance.collection('game').snapshots().listen((event) {
+          event.documentChanges.forEach((change) {
+            setState(() {});
+          });
+      });
+    }
   }
 
   @override
