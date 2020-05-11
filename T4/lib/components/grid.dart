@@ -10,14 +10,24 @@ class Grid {
   List<Move> player;
 
   
-  Map<String, dynamic> toJson() => 
-  {
-    'grid': grid,
-    'inARow': inARow,
-    'history': history,
-    'turn': turn,
-    'player': player
-  };
+  Map<String, dynamic> toJson() {
+    //var jsonGrid = [];
+
+    var jsonHistory = [];
+    history.forEach((h) => jsonHistory.add(h.toJson()));
+
+    var jsonPlayer = [];
+    player.forEach((m) => jsonPlayer.add(m.index));
+
+    return {
+      //'grid': grid, add grid later
+      'inARow': inARow,
+      'history': history,
+      'turn': turn,
+      'player': jsonPlayer
+    };
+  }
+
 
   Grid(row, col, this.inARow) {
     grid = List.generate(

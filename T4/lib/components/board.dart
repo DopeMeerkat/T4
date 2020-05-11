@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter/widgets.dart';
 import 'package:T4/components/btn.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'grid.dart';
 import 'move.dart';
@@ -26,13 +27,15 @@ class _BoardState extends State<StatefulWidget>
   GlobalKey _boardKey = GlobalKey();
   double r1 = 0, c1 = 0, r2 = 1, c2 = 1, width = 10.0;
   bool lineVisible = false;
-
+  //Firestore.instance.collection('game')
 
   _BoardState(this.grid);
 
   @override
   void initState() {
     super.initState();
+
+    //var v = Firestore.instance.collection("game").add({"test": "test"});
     _controller = new AnimationController(
       duration: const Duration(seconds: 1),
       vsync: this,

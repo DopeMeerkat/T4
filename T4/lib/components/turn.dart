@@ -23,4 +23,14 @@ class Turn {
     params.forEach((element) => msg += element.toString() + " ");
     print(msg);
   }
+
+  int moveTypeToInt(MoveType m) {
+    return m.index;
+  }
+
+  Map<String, dynamic> toJson() => {
+    'turnNum:': turnNum,
+    'type': moveTypeToInt(type),
+    'history': params,
+  };
 }
