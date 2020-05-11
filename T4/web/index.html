@@ -6,7 +6,6 @@
   <meta name="description" content="A new Flutter project.">
 
   <!-- iOS meta tags & icons -->
-  <!-- this is a comment!!!!!-->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="T4">
@@ -29,18 +28,35 @@
       });
     }
   </script>
-
-    <!-- The core Firebase JS SDK is always required and must be listed first -->
-    <script src="/__/firebase/7.14.3/firebase-app.js"></script>
-
-    <!-- TODO: Add SDKs for Firebase products that you want to use
-        https://firebase.google.com/docs/web/setup#available-libraries -->
-    <script src="/__/firebase/7.14.3/firebase-analytics.js"></script>
   
-    <!-- Initialize Firebase -->
-    <script src="/__/firebase/init.js"></script>
+
+  <!-- The core Firebase JS SDK is always required and must be listed first -->
+  <script src="https://www.gstatic.com/firebasejs/7.14.3/firebase-app.js"></script>
+
+  <!-- TODO: Add SDKs for Firebase products that you want to use
+      https://firebase.google.com/docs/web/setup#available-libraries -->
+  <script src="https://www.gstatic.com/firebasejs/7.14.3/firebase-analytics.js"></script>
+
+  <script src="https://www.gstatic.com/firebasejs/7.9.1/firebase-firestore.js"></script>
+  
+  <script>
+    // Your web app's Firebase configuration
+    var firebaseConfig = {
+      apiKey: "AIzaSyCvVp-W_TqDhwIKD0U0XV8-N_1oqfETt8U",
+      authDomain: "t4database.firebaseapp.com",
+      databaseURL: "https://t4database.firebaseio.com",
+      projectId: "t4database",
+      storageBucket: "t4database.appspot.com",
+      messagingSenderId: "1047935933024",
+      appId: "1:1047935933024:web:dec32dc41083f7fa848105",
+      measurementId: "G-0SSDK09MPC"
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    firebase.analytics();
+  </script>
+  <!-- END OF FIREBASE INIT CODE -->
+
   <script src="main.dart.js" type="application/javascript"></script>
-  <script src=”https://www.gstatic.com/firebasejs/6.6.0/firebase-app.js"></script>
-  <script src=”https://www.gstatic.com/firebasejs/6.6.0/firebase-auth.js"></script>
 </body>
 </html>
