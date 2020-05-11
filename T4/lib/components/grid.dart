@@ -79,7 +79,7 @@ class Grid {
       bsrs = r - c;
 
     if (r < (cols - 1 - c)) //find r c of slash
-      scs = 1 + c + r;
+      scs = c + r;
     else
       srs = r - (cols - 1 - c);
 
