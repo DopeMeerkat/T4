@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter/widgets.dart';
+import 'package:T4/components/btn.dart';
 
 import 'grid.dart';
 import 'move.dart';
@@ -66,61 +67,124 @@ class _BoardState extends State<StatefulWidget>
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        MaterialButton(
-          onPressed: () {
-            setState(() => grid.extend(0));
-          },
-          child: Text("left"),
-        ),
-        Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            MaterialButton(
-              onPressed: () {
-                setState(() => grid.extend(2));
-              },
-              child: Text("top"),
-            ),
-            CustomPaint(
-              foregroundPainter:
-                  new AnimatedPainter(_controller, r1, c1, r2, c2, lineVisible),
-              child: buildBoard(grid),
-            ),
-            MaterialButton(
-              onPressed: () {
-                setState(() => grid.extend(3));
-              },
-              child: Text("bottom"),
-            ),
-          ],
-        ),
-        Column(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          MaterialButton(
-            onPressed: () {
-              lineVisible = false;
-              setState(() => grid.undo());
+    return Container(
+      margin: const EdgeInsets.all(10.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Btn(
+            onTap: () {
+              setState(() => grid.extend(2));
             },
-            // child: Text("undo"),
-            child: new Icon(Icons.undo),
+            height: 40,
+            width: 250,
+            borderRadius: 250,
+            color: Colors.white,
+            child: Text(
+              "^",
+              style: TextStyle(
+                  color: Colors.black.withOpacity(.8),
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700),
+            ),
           ),
-          MaterialButton(
-            onPressed: () {
-              setState(() => grid.extend(1));
-            },
-            child: Text("right"),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Btn(
+                onTap: () {
+                  setState(() => grid.extend(0));
+                },
+                height: 250,
+                width: 40,
+                borderRadius: 250,
+                color: Colors.white,
+                child: Text(
+                  "<",
+                  style: TextStyle(
+                      color: Colors.black.withOpacity(.8),
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700),
+                ),
+              ),
+              CustomPaint(
+                foregroundPainter: new AnimatedPainter(
+                    _controller, r1, c1, r2, c2, lineVisible),
+                child: Container(
+                  decoration: BoxDecoration(
+                    boxShadow: [
+                      BoxShadow(
+                          color: Colors.black.withOpacity(.1),
+                          spreadRadius: 5,
+                          blurRadius: 10)
+                    ],
+                  ),
+                  child: buildBoard(grid),
+                ),
+              ),
+              Btn(
+                onTap: () {
+                  setState(() => grid.extend(1));
+                },
+                height: 250,
+                width: 40,
+                borderRadius: 250,
+                color: Colors.white,
+                child: Text(
+                  ">",
+                  style: TextStyle(
+                      color: Colors.black.withOpacity(.8),
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700),
+                ),
+              ),
+            ],
           ),
-          MaterialButton(
-            onPressed: () {
-              setState(() => grid.reset(3, 3));
-              lineVisible = false;
-            },
-            child: Text("New Game"),
-          ),
-        ]),
-      ],
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Btn(
+                onTap: () {
+                  lineVisible = false;
+                  setState(() => grid.undo());
+                },
+                height: 40,
+                width: 40,
+                borderRadius: 250,
+                color: Colors.white,
+                child: new Icon(Icons.undo),
+              ),
+              Btn(
+                onTap: () {
+                  setState(() => grid.extend(3));
+                },
+                height: 40,
+                width: 250,
+                borderRadius: 250,
+                color: Colors.white,
+                child: Text(
+                  "v",
+                  style: TextStyle(
+                      color: Colors.black.withOpacity(.8),
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700),
+                ),
+              ),
+              Btn(
+                onTap: () {
+                  setState(() => grid.reset(3, 3));
+                  lineVisible = false;
+                },
+                height: 40,
+                width: 40,
+                borderRadius: 250,
+                color: Colors.white,
+                child: new Icon(Icons.refresh),
+              ),
+            ],
+          )
+        ],
+      ),
     );
   }
 
