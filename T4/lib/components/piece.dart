@@ -1,3 +1,3 @@
-enum Move {
+enum Piece {
     o, x, block, empty
 }

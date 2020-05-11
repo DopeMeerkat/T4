@@ -1,38 +1,60 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter/widgets.dart';
-import 'package:firebase/firestore.dart';
+import 'package:T4/components/btn.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'grid.dart';
-import 'move.dart';
+import 'piece.dart';
 import 'line.dart';
+import 'game.dart';
+import 'online_game.dart';
+import 'offline_game.dart';
 
 class Board extends StatefulWidget {
-  final Grid grid = Grid.normal();
+  final Game game = OfflineGame();
 
   Board(); //implement later (with player names?)
 
   @override
-  _BoardState createState() => _BoardState(grid);
+  _BoardState createState() => _BoardState(game);
 }
 
 class _BoardState extends State<StatefulWidget>
     with SingleTickerProviderStateMixin {
 
   AnimationController _controller;
+  Game game;
   Grid grid;
   Offset startBlock;
   Offset endBlock; //for block moves
   GlobalKey _boardKey = GlobalKey();
-  double r1 = 0, c1 = 0, r2 = 1, c2 = 1;
-  bool lineVisible = false;
+  double r1, c1, r2, c2, width;
+  bool lineVisible;
+  
 
+  _BoardState(this.game) {
+    r1 = c1 = 0;
+    r2 = c2 = 0;
+    width = 10.0;
+    lineVisible = false;
+    grid = game.grid;
 
-  _BoardState(this.grid);
+    //update on db update
+    if (game.runtimeType == OnlineGame) {
+      Firestore.instance.collection('game').snapshots().listen((event) {
+          event.documentChanges.forEach((change) {
+            setState(() {});
+          });
+      });
+    }
+  }
 
   @override
   void initState() {
     super.initState();
+
+    //var v = Firestore.instance.collection("game").add({"test": "test"});
     _controller = new AnimationController(
       duration: const Duration(seconds: 1),
       vsync: this,
@@ -63,6 +85,11 @@ class _BoardState extends State<StatefulWidget>
       c1 = p1.dy;
       r2 = p2.dx;
       c2 = p2.dy;
+      int max = grid.grid.length;
+      if (grid.grid[0].length > grid.grid.length) max = grid.grid[0].length;
+
+      width = 30 / max;
+      if (width == 0) width = 1;
       lineVisible = true;
       _startAnimation();
     }
@@ -70,60 +97,129 @@ class _BoardState extends State<StatefulWidget>
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        MaterialButton(
-          onPressed: () {
-            setState(() => grid.extend(0));
-          },
-          child: Text("left"),
-        ),
-        Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            MaterialButton(
-              onPressed: () {
-                setState(() => grid.extend(2));
-              },
-              child: Text("top"),
-            ),
-            CustomPaint(
-              foregroundPainter:
-                  new AnimatedPainter(_controller, r1, c1, r2, c2, lineVisible),
-              child: buildBoard(grid),
-            ),
-            MaterialButton(
-              onPressed: () {
-                setState(() => grid.extend(3));
-              },
-              child: Text("bottom"),
-            ),
-          ],
-        ),
-        Column(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          MaterialButton(
-            onPressed: () {
-              setState(() => grid.undo());
+    return Container(
+      margin: const EdgeInsets.all(10.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Btn(
+            onTap: () {
+              //setState(() => grid.extend(2));
+              setState(() => game.extend(2));
             },
-            // child: Text("undo"),
-            child: new Icon(Icons.undo),
+            height: 40,
+            width: 250,
+            borderRadius: 250,
+            color: Colors.white,
+            child: Text(
+              "^",
+              style: TextStyle(
+                  color: Colors.black.withOpacity(.8),
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700),
+            ),
           ),
-          MaterialButton(
-            onPressed: () {
-              setState(() => grid.extend(1));
-            },
-            child: Text("right"),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Btn(
+                onTap: () {
+                  //setState(() => grid.extend(0));
+                  setState(() => game.extend(0));
+                },
+                height: 250,
+                width: 40,
+                borderRadius: 250,
+                color: Colors.white,
+                child: Text(
+                  "<",
+                  style: TextStyle(
+                      color: Colors.black.withOpacity(.8),
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700),
+                ),
+              ),
+              CustomPaint(
+                foregroundPainter: new AnimatedPainter(
+                    _controller, r1, c1, r2, c2, width, lineVisible),
+                child: Container(
+                  decoration: BoxDecoration(
+                    boxShadow: [
+                      BoxShadow(
+                          color: Colors.black.withOpacity(.1),
+                          spreadRadius: 5,
+                          blurRadius: 10)
+                    ],
+                  ),
+                  child: buildBoard(grid),
+                ),
+              ),
+              Btn(
+                onTap: () {
+                  //setState(() => grid.extend(1));
+                  setState(() => game.extend(1));
+                },
+                height: 250,
+                width: 40,
+                borderRadius: 250,
+                color: Colors.white,
+                child: Text(
+                  ">",
+                  style: TextStyle(
+                      color: Colors.black.withOpacity(.8),
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700),
+                ),
+              ),
+            ],
           ),
-          MaterialButton(
-            onPressed: () {
-              setState(() => grid.reset(3, 3));
-              lineVisible = false;
-            },
-            child: Text("New Game"),
-          ),
-        ]),
-      ],
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Btn(
+                onTap: () {
+                  lineVisible = false;
+                  setState(() => game.undo());
+                },
+                height: 40,
+                width: 40,
+                borderRadius: 250,
+                color: Colors.white,
+                child: new Icon(Icons.undo),
+              ),
+              Btn(
+                onTap: () {
+                  //setState(() => grid.extend(3));
+                  setState(() => game.extend(3));
+                },
+                height: 40,
+                width: 250,
+                borderRadius: 250,
+                color: Colors.white,
+                child: Text(
+                  "v",
+                  style: TextStyle(
+                      color: Colors.black.withOpacity(.8),
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700),
+                ),
+              ),
+              Btn(
+                onTap: () {
+                  setState(() => game.reset());
+                  //setState(() => grid.reset(3, 3));
+                  lineVisible = false;
+                },
+                height: 40,
+                width: 40,
+                borderRadius: 250,
+                color: Colors.white,
+                child: new Icon(Icons.refresh),
+              ),
+            ],
+          )
+        ],
+      ),
     );
   }
 
@@ -154,7 +250,8 @@ class _BoardState extends State<StatefulWidget>
               // _startAnimation();
               setState(() {
                 List<int> tile = getTileFromLocation(d.globalPosition);
-                grid.move(tile[0], tile[1]);
+                //grid.move(tile[0], tile[1]);
+                game.move(tile[0], tile[1]);
                 checkWin(tile[0], tile[1]);
               });
             },
@@ -170,9 +267,12 @@ class _BoardState extends State<StatefulWidget>
                 List<int> startTile = getTileFromLocation(startBlock);
                 List<int> endTile = getTileFromLocation(endBlock);
                 if (startTile == endTile) {
-                  grid.move(startTile[0], startTile[1]);
+                  //grid.move(startTile[0], startTile[1]);
+                  game.move(startTile[0], startTile[1]);
+                } else {
+                  //grid.block(startTile[0], startTile[1], endTile[0], endTile[1]);
+                  game.block(startTile[0], startTile[1], endTile[0], endTile[1]);
                 }
-                grid.block(startTile[0], startTile[1], endTile[0], endTile[1]);
               });
             },
             child: Column(
@@ -235,18 +335,17 @@ class _BoardState extends State<StatefulWidget>
     if (c > 0) border = border.add(bLeft);
     if (r == 0 && c == 0) border = Border();
 
-    // border = border.add(border2);
     switch (grid.grid[r][c]) {
-      case Move.o:
+      case Piece.o:
         image = Image.asset('assets/images/o.png');
         break;
-      case Move.x:
+      case Piece.x:
         image = Image.asset('assets/images/x.png');
         break;
-      case Move.block:
+      case Piece.block:
         image = Image.asset('assets/images/block.png');
         break;
-      case Move.empty:
+      case Piece.empty:
       //image = Image.asset('assets/images/block.png'); //change to empty
     }
     return AspectRatio(
