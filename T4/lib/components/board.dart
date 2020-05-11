@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter/widgets.dart';
 import 'package:T4/components/btn.dart';
+import 'package:T4/pages/start.dart';
 
 import 'grid.dart';
 import 'move.dart';
@@ -77,41 +78,68 @@ class _BoardState extends State<StatefulWidget>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Btn(
-            onTap: () {
-              setState(() => grid.extend(2));
-            },
-            height: 40,
-            width: 250,
-            borderRadius: 250,
-            color: Colors.white,
-            child: Text(
-              "^",
-              style: TextStyle(
-                  color: Colors.black.withOpacity(.8),
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700),
-            ),
-          ),
+          Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Btn(
+                  onTap: () {
+                    // lineVisible = false;
+                    // setState(() => grid.undo());
+                    Navigator.of(context).popUntil((route) => route.isFirst);
+                  },
+                  height: 40,
+                  width: 40,
+                  borderRadius: 250,
+                  color: Colors.white,
+                  child: new Icon(Icons.home),
+                ),
+                Btn(
+                    onTap: () {
+                      setState(() => grid.extend(2));
+                    },
+                    height: 40,
+                    width: 250,
+                    borderRadius: 250,
+                    color: Colors.white,
+                    // child: Text(
+                    //   "^",
+                    //   style: TextStyle(
+                    //       color: Colors.black.withOpacity(.8),
+                    //       fontSize: 16,
+                    //       fontWeight: FontWeight.w700),
+                    // ),
+                    child: new Icon(Icons.arrow_upward)),
+                Btn(
+                  onTap: () {
+                    // lineVisible = false;
+                    // setState(() => grid.undo());
+                  },
+                  height: 40,
+                  width: 40,
+                  borderRadius: 250,
+                  color: Colors.white,
+                  child: new Icon(Icons.settings),
+                ),
+              ]),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Btn(
-                onTap: () {
-                  setState(() => grid.extend(0));
-                },
-                height: 250,
-                width: 40,
-                borderRadius: 250,
-                color: Colors.white,
-                child: Text(
-                  "<",
-                  style: TextStyle(
-                      color: Colors.black.withOpacity(.8),
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700),
-                ),
-              ),
+                  onTap: () {
+                    setState(() => grid.extend(0));
+                  },
+                  height: 250,
+                  width: 40,
+                  borderRadius: 250,
+                  color: Colors.white,
+                  // child: Text(
+                  //   "<",
+                  //   style: TextStyle(
+                  //       color: Colors.black.withOpacity(.8),
+                  //       fontSize: 16,
+                  //       fontWeight: FontWeight.w700),
+                  // ),
+                  child: new Icon(Icons.arrow_back)),
               CustomPaint(
                 foregroundPainter: new AnimatedPainter(
                     _controller, r1, c1, r2, c2, width, lineVisible),
@@ -128,21 +156,21 @@ class _BoardState extends State<StatefulWidget>
                 ),
               ),
               Btn(
-                onTap: () {
-                  setState(() => grid.extend(1));
-                },
-                height: 250,
-                width: 40,
-                borderRadius: 250,
-                color: Colors.white,
-                child: Text(
-                  ">",
-                  style: TextStyle(
-                      color: Colors.black.withOpacity(.8),
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700),
-                ),
-              ),
+                  onTap: () {
+                    setState(() => grid.extend(1));
+                  },
+                  height: 250,
+                  width: 40,
+                  borderRadius: 250,
+                  color: Colors.white,
+                  // child: Text(
+                  //   ">",
+                  //   style: TextStyle(
+                  //       color: Colors.black.withOpacity(.8),
+                  //       fontSize: 16,
+                  //       fontWeight: FontWeight.w700),
+                  // ),
+                  child: new Icon(Icons.arrow_forward)),
             ],
           ),
           Row(
@@ -160,21 +188,22 @@ class _BoardState extends State<StatefulWidget>
                 child: new Icon(Icons.undo),
               ),
               Btn(
-                onTap: () {
-                  setState(() => grid.extend(3));
-                },
-                height: 40,
-                width: 250,
-                borderRadius: 250,
-                color: Colors.white,
-                child: Text(
-                  "v",
-                  style: TextStyle(
-                      color: Colors.black.withOpacity(.8),
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700),
-                ),
-              ),
+                  onTap: () {
+                    setState(() => grid.extend(3));
+                  },
+                  height: 40,
+                  width: 250,
+                  borderRadius: 250,
+                  color: Colors.white,
+                  child: new Icon(Icons.arrow_downward)
+                  // child: Text(
+                  //   "v",
+                  //   style: TextStyle(
+                  //       color: Colors.black.withOpacity(.8),
+                  //       fontSize: 16,
+                  //       fontWeight: FontWeight.w700),
+                  // ),
+                  ),
               Btn(
                 onTap: () {
                   setState(() => grid.reset(3, 3));
