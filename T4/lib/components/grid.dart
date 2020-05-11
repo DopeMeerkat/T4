@@ -5,7 +5,7 @@ import 'history.dart';
 class Grid {
   List<List<Piece>> grid; //list of rows (first list is y axis, second is x)
   int inARow;
-  History history;
+  Game game;
 
   List<Piece> player;
 
@@ -16,7 +16,7 @@ class Grid {
     player.add(Piece.x);
     player.add(Piece.o);
 
-    history = History(this);
+    game = Game(this);
   }
 
   Grid.normal() : this(3, 3, 3);
@@ -153,7 +153,7 @@ class Grid {
 
   bool move(int r, int c) {
     if (grid[r][c] == Piece.empty) {
-      grid[r][c] = player[history.turn % 2];
+      grid[r][c] = player[game.turn % 2];
       //history.addMove(r, c);
       printHistory();
       // if (checkWinner(r, c)) {}
@@ -214,7 +214,7 @@ class Grid {
   }
 
   void reset(int r, int c) {
-    history.reset();
+    game.reset();
     grid =
         List.generate(r, (i) => new List.filled(c, Piece.empty, growable: true));
   }

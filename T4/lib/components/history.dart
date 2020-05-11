@@ -2,13 +2,13 @@ import 'turn.dart';
 import 'grid.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class History {
+class Game {
   Grid grid;
   final db = Firestore.instance.collection('game');
   //List<Turn> moveList;
   int turn;
 
-  History(this.grid) {
+  Game(this.grid) {
     listen();
     //moveList = [];
     turn = 1;
@@ -21,7 +21,6 @@ class History {
         ds.reference.delete();
       }
     });
-    
     turn = 1;
   }
 
