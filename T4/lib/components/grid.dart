@@ -16,7 +16,7 @@ class Grid {
     player.add(Piece.x);
     player.add(Piece.o);
 
-    history = History();
+    history = History(this);
   }
 
   Grid.normal() : this(3, 3, 3);
