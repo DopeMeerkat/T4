@@ -49,7 +49,7 @@ class Grid {
         break;
     }
 
-    history.addExtend(dir);
+    //history.addExtend(dir);
   }
 
   List<int> checkWinner(int r, c) {
@@ -154,7 +154,7 @@ class Grid {
   bool move(int r, int c) {
     if (grid[r][c] == Piece.empty) {
       grid[r][c] = player[history.turn % 2];
-      history.addMove(r, c);
+      //history.addMove(r, c);
       printHistory();
       // if (checkWinner(r, c)) {}
       print(checkWinner(r, c));
@@ -171,7 +171,7 @@ class Grid {
       grid[r1][c1] = Piece.block;
       grid[r2][c2] = Piece.block;
 
-      history.addBlock(r1, c1, r2, c2);
+      //history.addBlock(r1, c1, r2, c2);
 
       return true;
     }

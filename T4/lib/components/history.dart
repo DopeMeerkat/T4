@@ -5,35 +5,51 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class History {
   Grid grid;
   final db = Firestore.instance.collection('game');
-  List<Turn> moveList;
+  //List<Turn> moveList;
   int turn;
 
   History(this.grid) {
     listen();
-    moveList = [];
+    //moveList = [];
     turn = 0;
   }
 
   clear() {
-    moveList = [];
+    //moveList = [];
+    db.getDocuments().then((snapshot) {
+      for (DocumentSnapshot ds in snapshot.documents){
+        ds.reference.delete();
+      }
+    });
     turn = 0;
   }
 
   Turn undo() {
     if (turn != 0) {
       removeLastFromDB();
+    } else {
+      return null;
+    }
+    /*
+    if (turn != 0) {
+      //removeLastFromDB();
       turn--;
       return moveList.removeLast();
     } else {
       return null;
     }
+    */
   }
   int getTurn() {
     return turn;
   }
-
+  
   void addLastToDB() {
-    db.document(turn.toString()).setData(moveList.last.toJson());
+    //db.document(turn.toString()).setData(moveList.last.toJson());
+  }
+
+  addTurnToDB(Turn t) {
+    db.document(turn.toString()).setData(t.toJson());
   }
 
   void removeLastFromDB() {
@@ -41,18 +57,21 @@ class History {
   }
 
   void addExtend(int dir) {
-    moveList.add(Turn(++turn, TurnType.extend, [dir]));
-    addLastToDB();
+    //moveList.add(Turn(++turn, TurnType.extend, [dir]));
+    //addLastToDB();
+    addTurnToDB(Turn(turn, TurnType.extend, [dir]));
   }
 
   void addMove(int r, int c) {
-    moveList.add(Turn(++turn, TurnType.move, [r, c]));
-    addLastToDB();
+    //moveList.add(Turn(turn, TurnType.move, [r, c])); //removed turn++
+    //addLastToDB();
+    addTurnToDB(Turn(turn, TurnType.move, [r, c]));
   }
 
   void addBlock(int r1, int c1, int r2, int c2) {
-    moveList.add(Turn(++turn, TurnType.block, [r1, c1, r2, c2]));
-    addLastToDB();
+    //moveList.add(Turn(++turn, TurnType.block, [r1, c1, r2, c2]));
+    //addLastToDB();
+    addTurnToDB(Turn(turn, TurnType.block, [r1, c1, r2, c2]));
   }
 
   //listens and plays any move the db does
@@ -69,17 +88,21 @@ class History {
   void handleDBChange(DocumentChange move) {
     switch (move.type) {
       case DocumentChangeType.added:
-        if (move.document.data["turnNum"] > turn) {
+        /*
+        if (int.parse(move.document.data["turnNum"]) >= turn) {
           turn++;
           playMoveFromDB(move.document.data);
         }
+        */
+        turn++;
+        playMoveFromDB(move.document.data);
         break;
       case DocumentChangeType.modified:
         print("Document Modified: error");
         break;
       case DocumentChangeType.removed:
         grid.undo();
-        moveList.removeLast();
+        //moveList.removeLast();
         break;
     }
   }
@@ -103,7 +126,7 @@ class History {
 
   String toString() {
     String history = "";
-    moveList.forEach((move) => history += move.toString());
+    //moveList.forEach((move) => history += move.toString());
     return history;
   }
 }

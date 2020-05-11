@@ -25,11 +25,25 @@ class _BoardState extends State<StatefulWidget>
   Offset startBlock;
   Offset endBlock; //for block moves
   GlobalKey _boardKey = GlobalKey();
-  double r1 = 0, c1 = 0, r2 = 1, c2 = 1, width = 10.0;
-  bool lineVisible = false;
-  //Firestore.instance.collection('game')
+  double r1, c1, r2, c2, width;
+  bool lineVisible;
+  
 
-  _BoardState(this.grid);
+  _BoardState(this.grid) {
+    r1 = c1 = 0;
+    r2 = c2 = 0;
+    width = 10.0;
+    lineVisible = false;
+
+    //update on db update
+    
+    Firestore.instance.collection('game').snapshots().listen((event) {
+        event.documentChanges.forEach((change) {
+          setState(() {});
+        });
+    });
+    
+  }
 
   @override
   void initState() {
@@ -85,7 +99,8 @@ class _BoardState extends State<StatefulWidget>
         children: [
           Btn(
             onTap: () {
-              setState(() => grid.extend(2));
+              //setState(() => grid.extend(2));
+              setState(() => grid.history.addExtend(2));
             },
             height: 40,
             width: 250,
@@ -104,7 +119,8 @@ class _BoardState extends State<StatefulWidget>
             children: [
               Btn(
                 onTap: () {
-                  setState(() => grid.extend(0));
+                  //setState(() => grid.extend(0));
+                  setState(() => grid.history.addExtend(0));
                 },
                 height: 250,
                 width: 40,
@@ -135,7 +151,8 @@ class _BoardState extends State<StatefulWidget>
               ),
               Btn(
                 onTap: () {
-                  setState(() => grid.extend(1));
+                  //setState(() => grid.extend(1));
+                  setState(() => grid.history.addExtend(1));
                 },
                 height: 250,
                 width: 40,
@@ -167,7 +184,8 @@ class _BoardState extends State<StatefulWidget>
               ),
               Btn(
                 onTap: () {
-                  setState(() => grid.extend(3));
+                  //setState(() => grid.extend(3));
+                  setState(() => grid.history.addExtend(3));
                 },
                 height: 40,
                 width: 250,
@@ -226,7 +244,8 @@ class _BoardState extends State<StatefulWidget>
               // _startAnimation();
               setState(() {
                 List<int> tile = getTileFromLocation(d.globalPosition);
-                grid.move(tile[0], tile[1]);
+                //grid.move(tile[0], tile[1]);
+                grid.history.addMove(tile[0], tile[1]);
                 checkWin(tile[0], tile[1]);
               });
             },
@@ -242,9 +261,12 @@ class _BoardState extends State<StatefulWidget>
                 List<int> startTile = getTileFromLocation(startBlock);
                 List<int> endTile = getTileFromLocation(endBlock);
                 if (startTile == endTile) {
-                  grid.move(startTile[0], startTile[1]);
+                  //grid.move(startTile[0], startTile[1]);
+                  grid.history.addMove(startTile[0], startTile[1]);
+                } else {
+                  //grid.block(startTile[0], startTile[1], endTile[0], endTile[1]);
+                  grid.history.addBlock(startTile[0], startTile[1], endTile[0], endTile[1]);
                 }
-                grid.block(startTile[0], startTile[1], endTile[0], endTile[1]);
               });
             },
             child: Column(
