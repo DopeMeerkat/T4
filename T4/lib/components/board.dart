@@ -42,7 +42,8 @@ class _BoardState extends State<StatefulWidget>
 
     //update on db update
     if (game.runtimeType == OnlineGame) {
-      Firestore.instance.collection('game').snapshots().listen((event) {
+      OnlineGame onlineGame = game as OnlineGame;
+      onlineGame.listenRef().listen((event) {
           event.documentChanges.forEach((change) {
             setState(() {
             });

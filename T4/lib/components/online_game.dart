@@ -4,21 +4,26 @@ import 'game.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class OnlineGame extends Game {
-  final db = Firestore.instance.collection('game');
+  DocumentReference db;
+  CollectionReference moves;
   bool resetting;
+  final String id;
 
-  OnlineGame() : super() {
+  OnlineGame(this.id) : super() {
+    db = Firestore.instance.collection('games').document(id);
+    moves = db.collection('moves');
     listen();
     resetting = false;
+    //db ;
   }
 
   @override
   void reset() {
-    db.document("reset").setData({"reset": "reset"});
+    moves.document("reset").setData({"reset": "reset"});
   }
 
   void clearBoard() {
-    db.getDocuments().then((snapshot) {
+    moves.getDocuments().then((snapshot) {
       for (DocumentSnapshot ds in snapshot.documents){
         ds.reference.delete();
       }
@@ -38,11 +43,11 @@ class OnlineGame extends Game {
   }
 
   addTurnToDB(Turn t) {
-    db.document(turn.toString()).setData(t.toJson());
+    moves.document(turn.toString()).setData(t.toJson());
   }
 
   void removeLastFromDB() {
-    db.document((turn - 1).toString()).delete();
+    moves.document((turn - 1).toString()).delete();
   }
 
   @override
@@ -67,11 +72,15 @@ class OnlineGame extends Game {
   //listens and plays any move the db does
   //strong assumption turns are in correct order
   void listen() {
-    db.snapshots().listen((event) {
+    moves.snapshots().listen((event) {
       event.documentChanges.forEach((change) {
         handleDBChange(change);
       });
     });
+  }
+
+  Stream<QuerySnapshot> listenRef() {
+    return moves.snapshots();
   }
 
   //NOTE: STRONG ASSUMPTION DOCUMENTS ARE IN ORDER

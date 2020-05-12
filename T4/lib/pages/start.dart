@@ -26,7 +26,7 @@ class StartPage extends StatelessWidget {
               children: <Widget>[
                 title(),
                 game(context, "LOCAL GAME", OfflineGame()),
-                game(context, "ONLINE GAME", OnlineGame()),
+                game(context, "ONLINE GAME", OnlineGame("test")),
               ],
             ),
           ),
@@ -57,6 +57,44 @@ Widget title() {
 }
 
 Widget game(BuildContext context, String name, Game game) {
+  createOnlineGame() async {
+    TextEditingController controller = TextEditingController();
+
+    await showDialog<String>(
+        context: context,
+
+        builder: (_) => AlertDialog(
+          contentPadding: const EdgeInsets.all(16.0),
+          content: Row(
+            children: <Widget>[
+              Expanded(
+                  child: TextField(
+                controller: controller,
+                autofocus: true,
+                decoration: InputDecoration(
+                  labelText: 'Enter Game ID',
+                ),
+              )),
+            ],
+          ),
+          actions: <Widget>[
+            FlatButton(
+                child: const Text('Cancel'),
+                onPressed: () {
+                  Navigator.pop(context);
+                }),
+            FlatButton(
+                child: const Text('Create'),
+                onPressed: () {
+                  Navigator.pop(context);
+                  Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => Board(OnlineGame(controller.text))),
+                  );
+                }
+            ),
+          ],
+        ));
+  }
   return Flexible(
     flex: 1,
     child: Column(
@@ -65,12 +103,16 @@ Widget game(BuildContext context, String name, Game game) {
       children: <Widget>[
         Btn(
           onTap: () {
-            Navigator.push(
-              context,
-              CupertinoPageRoute(
-                builder: (context) => GamePage(game),
-              ),
-            );
+            if (game.runtimeType == OnlineGame) {
+              createOnlineGame();
+            } else {
+              Navigator.push(
+                context,
+                CupertinoPageRoute(
+                  builder: (context) => GamePage(game),
+                ),
+              );
+            }
           },
           height: 40,
           width: 250,
