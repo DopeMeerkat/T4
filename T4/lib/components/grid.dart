@@ -1,6 +1,5 @@
 import 'piece.dart';
 import 'turn.dart';
-import 'online_game.dart';
 import 'game.dart';
 
 class Grid {
@@ -51,13 +50,13 @@ class Grid {
     //history.addExtend(dir);
   }
 
-  List<int> checkWinner(int r, c) {
+  List<int> checkWinner(int r, int c) {
     List<int> ret = new List<int>();
     int hor = 0, vert = 0, slash = 0, bSlash = 0;
     int hStart = 0, vStart = 0, sStart = 0, bsStart = 0;
     int hEnd = 0, vEnd = 0, sEnd = 0, bsEnd = 0;
-    var player = grid[r][c];
-    // print(grid);
+    //var player = grid[r][c];
+    var play = player[game.turn % 2];
     var rows = grid.length;
     var cols = grid[0].length;
     var max = rows;
@@ -75,7 +74,7 @@ class Grid {
       srs = r - (cols - 1 - c);
 
     for (int i = 0; i < max; i++) {
-      if (i < cols && grid[r][i] == player) //find horizontal
+      if (i < cols && grid[r][i] == play) //find horizontal
       {
         hor++;
         hEnd = i;
@@ -85,7 +84,7 @@ class Grid {
       } else
         break;
 
-      if (i < rows && grid[i][c] == player) //find vertical
+      if (i < rows && grid[i][c] == play) //find vertical
       {
         vEnd = i;
         vert++;
@@ -98,7 +97,7 @@ class Grid {
       // find backslash
       if (bsrs + i < rows &&
           bscs + i < cols &&
-          grid[bsrs + i][bscs + i] == player) {
+          grid[bsrs + i][bscs + i] == play) {
         bSlash++;
         bsEnd = i;
       } else if (bSlash < inARow) {
@@ -108,7 +107,7 @@ class Grid {
         break;
 
       //find slash
-      if (srs + i < rows && scs - i >= 0 && grid[srs + i][scs - i] == player) {
+      if (srs + i < rows && scs - i >= 0 && grid[srs + i][scs - i] == play) {
         slash++;
         sEnd = i;
       } else if (slash < inARow) {
@@ -154,9 +153,9 @@ class Grid {
     if (grid[r][c] == Piece.empty) {
       grid[r][c] = player[game.turn % 2];
       //history.addMove(r, c);
-      printHistory();
+      //printHistory();
       // if (checkWinner(r, c)) {}
-      print(checkWinner(r, c));
+      //print(checkWinner(r, c));
       return true;
     }
     return false;

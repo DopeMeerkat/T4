@@ -12,7 +12,7 @@ import 'online_game.dart';
 import 'offline_game.dart';
 
 class Board extends StatefulWidget {
-  final Game game = OfflineGame();
+  final Game game = OnlineGame();
 
   Board(); //implement later (with player names?)
 
@@ -44,7 +44,8 @@ class _BoardState extends State<StatefulWidget>
     if (game.runtimeType == OnlineGame) {
       Firestore.instance.collection('game').snapshots().listen((event) {
           event.documentChanges.forEach((change) {
-            setState(() {});
+            setState(() {
+            });
           });
       });
     }
@@ -156,7 +157,6 @@ class _BoardState extends State<StatefulWidget>
               ),
               Btn(
                 onTap: () {
-                  //setState(() => grid.extend(1));
                   setState(() => game.extend(1));
                 },
                 height: 250,
@@ -246,17 +246,18 @@ class _BoardState extends State<StatefulWidget>
           child: GestureDetector(
             behavior: HitTestBehavior.translucent,
             onTapUp: (TapUpDetails d) {
-              print("tapping");
+              //print("tapping");
               // _startAnimation();
               setState(() {
                 List<int> tile = getTileFromLocation(d.globalPosition);
                 //grid.move(tile[0], tile[1]);
                 game.move(tile[0], tile[1]);
+
                 checkWin(tile[0], tile[1]);
               });
             },
             onPanStart: (DragStartDetails d) {
-              print("panning");
+              //print("panning");
               startBlock = d.globalPosition;
             },
             onPanUpdate: (DragUpdateDetails d) {

@@ -5,24 +5,31 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class OnlineGame extends Game {
   final db = Firestore.instance.collection('game');
+  bool resetting;
 
   OnlineGame() : super() {
     listen();
+    resetting = false;
   }
 
   @override
   void reset() {
-    //moveList = [];
+    db.document("reset").setData({"reset": "reset"});
+  }
+
+  void clearBoard() {
     db.getDocuments().then((snapshot) {
       for (DocumentSnapshot ds in snapshot.documents){
         ds.reference.delete();
       }
     });
+    grid.reset(3, 3);
     turn = 1;
   }
 
   @override
   void undo() {
+    resetting = false;
     if (turn != 0) {
       removeLastFromDB();
     } else {
@@ -67,14 +74,20 @@ class OnlineGame extends Game {
   void handleDBChange(DocumentChange move) {
     switch (move.type) {
       case DocumentChangeType.added:
+        if (move.document.documentID == "reset") {
+          resetting = true;
+          clearBoard();
+        }
         turn++;
         playMoveFromDB(move.document.data);
         break;
       case DocumentChangeType.modified:
         break;
       case DocumentChangeType.removed:
-        turn--;
-        undoMoveFromDB(move.document.data);
+        if (!resetting) {
+          turn--;
+          undoMoveFromDB(move.document.data);
+        }
         break;
     }
   }
