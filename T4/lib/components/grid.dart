@@ -148,6 +148,7 @@ class Grid {
     }
     return ret;
   }
+
   bool canMove(int r, int c) {
     return grid[r][c] == Piece.empty;
   }
@@ -160,8 +161,9 @@ class Grid {
     return grid[r1][c1] == Piece.empty &&
         grid[r2][c2] == Piece.empty &&
         ((r2 - r1).abs() == 1 && (c2 - c1).abs() < 1) ^
-          ((c2 - c1).abs() == 1 && (r2 - r1).abs() < 1);
+            ((c2 - c1).abs() == 1 && (r2 - r1).abs() < 1);
   }
+
   void block(int r1, int c1, int r2, int c2) {
     grid[r1][c1] = Piece.block;
     grid[r2][c2] = Piece.block;
@@ -203,8 +205,8 @@ class Grid {
   }
 
   void reset(int r, int c) {
-    grid =
-        List.generate(r, (i) => new List.filled(c, Piece.empty, growable: true));
+    grid = List.generate(
+        r, (i) => new List.filled(c, Piece.empty, growable: true));
   }
 
   void printHistory() {

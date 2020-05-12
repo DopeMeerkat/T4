@@ -3,6 +3,7 @@ import 'package:flutter/semantics.dart';
 import 'package:flutter/widgets.dart';
 import 'package:T4/components/btn.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:T4/constants.dart';
 
 import 'grid.dart';
 import 'piece.dart';
@@ -106,8 +107,6 @@ class _BoardState extends State<StatefulWidget>
               children: <Widget>[
                 Btn(
                   onTap: () {
-                    // lineVisible = false;
-                    // setState(() => grid.undo());
                     Navigator.of(context).popUntil((route) => route.isFirst);
                   },
                   height: 40,
@@ -124,24 +123,28 @@ class _BoardState extends State<StatefulWidget>
                     width: 250,
                     borderRadius: 250,
                     color: Colors.white,
-                    // child: Text(
-                    //   "^",
-                    //   style: TextStyle(
-                    //       color: Colors.black.withOpacity(.8),
-                    //       fontSize: 16,
-                    //       fontWeight: FontWeight.w700),
-                    // ),
                     child: new Icon(Icons.arrow_upward)),
                 Btn(
-                  onTap: () {
-                    // lineVisible = false;
-                    // setState(() => grid.undo());
-                  },
+                  onTap: () {},
                   height: 40,
                   width: 40,
                   borderRadius: 250,
                   color: Colors.white,
-                  child: new Icon(Icons.settings),
+                  // child: new Icon(Icons.settings),
+                  child: PopupMenuButton<String>(
+                    onSelected: choiceAction,
+                    icon: new Icon(Icons.settings),
+                    shape: new RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20)),
+                    itemBuilder: (BuildContext context) {
+                      return Constants.choices.map((String choice) {
+                        return PopupMenuItem<String>(
+                          value: choice,
+                          child: Text(choice),
+                        );
+                      }).toList();
+                    },
+                  ),
                 ),
               ]),
           Row(
@@ -155,13 +158,6 @@ class _BoardState extends State<StatefulWidget>
                   width: 40,
                   borderRadius: 250,
                   color: Colors.white,
-                  // child: Text(
-                  //   "<",
-                  //   style: TextStyle(
-                  //       color: Colors.black.withOpacity(.8),
-                  //       fontSize: 16,
-                  //       fontWeight: FontWeight.w700),
-                  // ),
                   child: new Icon(Icons.arrow_back)),
               CustomPaint(
                 foregroundPainter: new AnimatedPainter(
@@ -186,61 +182,46 @@ class _BoardState extends State<StatefulWidget>
                   width: 40,
                   borderRadius: 250,
                   color: Colors.white,
-                  // child: Text(
-                  //   ">",
-                  //   style: TextStyle(
-                  //       color: Colors.black.withOpacity(.8),
-                  //       fontSize: 16,
-                  //       fontWeight: FontWeight.w700),
-                  // ),
                   child: new Icon(Icons.arrow_forward)),
             ],
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Btn(
-                onTap: () {
-                  lineVisible = false;
-                  setState(() => game.undo());
-                },
-                height: 40,
-                width: 40,
-                borderRadius: 250,
-                color: Colors.white,
-                child: new Icon(Icons.undo),
-              ),
-              Btn(
-                  onTap: () {
-                    setState(() => grid.extend(3));
-                  },
-                  height: 40,
-                  width: 250,
-                  borderRadius: 250,
-                  color: Colors.white,
-                  child: new Icon(Icons.arrow_downward)
-                  // child: Text(
-                  //   "v",
-                  //   style: TextStyle(
-                  //       color: Colors.black.withOpacity(.8),
-                  //       fontSize: 16,
-                  //       fontWeight: FontWeight.w700),
-                  // ),
-                  ),
-              Btn(
-                onTap: () {
-                  setState(() => game.reset());
-                  //setState(() => grid.reset(3, 3));
-                  lineVisible = false;
-                },
-                height: 40,
-                width: 40,
-                borderRadius: 250,
-                color: Colors.white,
-                child: new Icon(Icons.refresh),
-              ),
-            ],
-          )
+          // Row(
+          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //   children: <Widget>[
+          //     Btn(
+          //       onTap: () {
+          //         lineVisible = false;
+          //         setState(() => game.undo());
+          //       },
+          //       height: 40,
+          //       width: 40,
+          //       borderRadius: 250,
+          //       color: Colors.white,
+          //       child: new Icon(Icons.undo),
+          //     ),
+          Btn(
+              onTap: () {
+                setState(() => grid.extend(3));
+              },
+              height: 40,
+              width: 250,
+              borderRadius: 250,
+              color: Colors.white,
+              child: new Icon(Icons.arrow_downward)),
+          //   Btn(
+          //     onTap: () {
+          //       setState(() => game.reset());
+          //       //setState(() => grid.reset(3, 3));
+          //       lineVisible = false;
+          //     },
+          //     height: 40,
+          //     width: 40,
+          //     borderRadius: 250,
+          //     color: Colors.white,
+          //     child: new Icon(Icons.refresh),
+          //   ),
+          // ],
+          // )
         ],
       ),
     );
@@ -346,6 +327,17 @@ class _BoardState extends State<StatefulWidget>
     var y = (r + .5) * (boardHeight / grid.rows());
     var x = (c + .5) * (boardWidth / grid.cols());
     return Offset(x, y);
+  }
+
+  void choiceAction(String choice) {
+    if (choice == Constants.GameSettings) {
+    } else if (choice == Constants.Undo) {
+      lineVisible = false;
+      setState(() => game.undo());
+    } else if (choice == Constants.NewGame) {
+      setState(() => game.reset());
+      lineVisible = false;
+    }
   }
 
   //use row and col to do logic stuff later
