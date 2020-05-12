@@ -25,7 +25,7 @@ class StartPage extends StatelessWidget {
               mainAxisSize: MainAxisSize.max,
               children: <Widget>[
                 title(),
-                game(context, "LOCAL GAME", OfflineGame()),
+                game(context, "LOCAL GAME", OfflineGame(size: 4)),
                 game(context, "ONLINE GAME", OnlineGame("i")),
               ],
             ),

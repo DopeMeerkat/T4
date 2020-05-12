@@ -34,7 +34,7 @@ class OfflineGame extends Game {
   @override
   void reset() {
     moveList = [];
-    grid.reset(3, 3);
+    grid.reset(size, size);
   }
 
   @override

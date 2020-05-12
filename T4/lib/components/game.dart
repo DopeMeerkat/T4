@@ -5,12 +5,13 @@ abstract class Game {
   Grid grid;
   int turn;
   int inARow;
+  int size;
 
-  Game() {
-    grid = Grid.normal(this);
-    turn = 1;
-    inARow = 3;
+  
+  Game({this.size = 3, this.turn = 1, this.inARow = 3}) {
+    grid = Grid.square(this, size);
   }
+  
 
   void reset();
 

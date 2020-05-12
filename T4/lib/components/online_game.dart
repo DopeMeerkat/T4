@@ -14,7 +14,6 @@ class OnlineGame extends Game {
     moves = db.collection('moves');
     listen();
     resetting = false;
-    //db ;
   }
 
   @override
@@ -28,7 +27,7 @@ class OnlineGame extends Game {
         ds.reference.delete();
       }
     });
-    grid.reset(3, 3);
+    grid.reset(size, size);
     turn = 1;
   }
 
@@ -106,7 +105,6 @@ class OnlineGame extends Game {
     }
   }
 
-  //TODO add move to list
   void playMoveFromDB(Map<String, dynamic> move) {
     List params = move["params"];
     
@@ -125,11 +123,5 @@ class OnlineGame extends Game {
 
   undoMoveFromDB(Map<String, dynamic> move) {
     grid.undo(Turn.fromJson(move));
-  }
-
-  String toString() {
-    String history = "";
-    //moveList.forEach((move) => history += move.toString());
-    return history;
   }
 }

@@ -3,20 +3,20 @@ import 'turn.dart';
 import 'game.dart';
 
 class Grid {
-  List<List<Piece>> grid; //list of rows (first list is y axis, second is x)
+  List<List<Piece>> grid;
   Game game;
 
   List<Piece> player;
 
   Grid(this.game, row, col) {
     grid = List.generate(
-        row, (i) => new List.filled(col, Piece.empty, growable: true));
+        row, (i) => List.filled(col, Piece.empty, growable: true));
     player = List<Piece>();
     player.add(Piece.x);
     player.add(Piece.o);
   }
 
-  Grid.normal(Game game) : this(game, 3, 3);
+  Grid.square(Game game, int size) : this(game, size, size);
 
   int rows() {
     return grid.length;
@@ -50,7 +50,7 @@ class Grid {
   }
 
   List<int> checkWinner(int r, int c) {
-    List<int> ret = new List<int>();
+    List<int> ret = List<int>();
     int hor = 0, vert = 0, slash = 0, bSlash = 0;
     int hStart = 0, vStart = 0, sStart = 0, bsStart = 0;
     int hEnd = 0, vEnd = 0, sEnd = 0, bsEnd = 0;
@@ -115,11 +115,6 @@ class Grid {
       } else
         break;
     }
-
-    // return (vert >= inARow ||
-    //     hor >= inARow ||
-    //     slash >= inARow ||
-    //     bSlash >= inARow);
     if (hor >= game.inARow) {
       print("horizWin");
       ret.add(r);
@@ -147,6 +142,7 @@ class Grid {
     }
     return ret;
   }
+
   bool canMove(int r, int c) {
     return grid[r][c] == Piece.empty;
   }
@@ -159,8 +155,9 @@ class Grid {
     return grid[r1][c1] == Piece.empty &&
         grid[r2][c2] == Piece.empty &&
         ((r2 - r1).abs() == 1 && (c2 - c1).abs() < 1) ^
-          ((c2 - c1).abs() == 1 && (r2 - r1).abs() < 1);
+            ((c2 - c1).abs() == 1 && (r2 - r1).abs() < 1);
   }
+
   void block(int r1, int c1, int r2, int c2) {
     grid[r1][c1] = Piece.block;
     grid[r2][c2] = Piece.block;
@@ -202,8 +199,7 @@ class Grid {
   }
 
   void reset(int r, int c) {
-    grid =
-        List.generate(r, (i) => new List.filled(c, Piece.empty, growable: true));
+    grid = List.generate(r, (i) => List.filled(c, Piece.empty, growable: true));
   }
 
   void printHistory() {

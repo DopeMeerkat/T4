@@ -55,9 +55,7 @@ class _BoardState extends State<StatefulWidget>
   @override
   void initState() {
     super.initState();
-
-    //var v = Firestore.instance.collection("game").add({"test": "test"});
-    _controller = new AnimationController(
+    _controller = AnimationController(
       duration: const Duration(seconds: 1),
       vsync: this,
     );
@@ -142,7 +140,7 @@ class _BoardState extends State<StatefulWidget>
                 ),
               ),
               CustomPaint(
-                foregroundPainter: new AnimatedPainter(
+                foregroundPainter: AnimatedPainter(
                     _controller, r1, c1, r2, c2, width, lineVisible),
                 child: Container(
                   decoration: BoxDecoration(
@@ -186,7 +184,7 @@ class _BoardState extends State<StatefulWidget>
                 width: 40,
                 borderRadius: 250,
                 color: Colors.white,
-                child: new Icon(Icons.undo),
+                child: Icon(Icons.undo),
               ),
               Btn(
                 onTap: () {
@@ -215,7 +213,7 @@ class _BoardState extends State<StatefulWidget>
                 width: 40,
                 borderRadius: 250,
                 color: Colors.white,
-                child: new Icon(Icons.refresh),
+                child: Icon(Icons.refresh),
               ),
             ],
           )
