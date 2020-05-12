@@ -77,9 +77,10 @@ class OnlineGame extends Game {
         if (move.document.documentID == "reset") {
           resetting = true;
           clearBoard();
+        } else { //regular move
+          turn++;
+          playMoveFromDB(move.document.data);
         }
-        turn++;
-        playMoveFromDB(move.document.data);
         break;
       case DocumentChangeType.modified:
         break;
