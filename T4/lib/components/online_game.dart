@@ -52,12 +52,16 @@ class OnlineGame extends Game {
 
   @override  
   void move(int r, int c) {
-    addTurnToDB(Turn(turn, TurnType.move, [r, c]));
+    if (grid.canMove(r, c)) {
+      addTurnToDB(Turn(turn, TurnType.move, [r, c]));
+    }
   }
 
   @override
   void block(int r1, int c1, int r2, int c2) {
-    addTurnToDB(Turn(turn, TurnType.block, [r1, c1, r2, c2]));
+    if (grid.canBlock(r1, c1, r2, c2)) {
+      addTurnToDB(Turn(turn, TurnType.block, [r1, c1, r2, c2]));
+    }
   }
 
   //listens and plays any move the db does

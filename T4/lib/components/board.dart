@@ -12,9 +12,9 @@ import 'online_game.dart';
 import 'offline_game.dart';
 
 class Board extends StatefulWidget {
-  final Game game = OnlineGame();
+  final Game game;
 
-  Board(); //implement later (with player names?)
+  Board(this.game); //implement later (with player names?)
 
   @override
   _BoardState createState() => _BoardState(game);
@@ -250,7 +250,6 @@ class _BoardState extends State<StatefulWidget>
               // _startAnimation();
               setState(() {
                 List<int> tile = getTileFromLocation(d.globalPosition);
-                //grid.move(tile[0], tile[1]);
                 game.move(tile[0], tile[1]);
 
                 checkWin(tile[0], tile[1]);

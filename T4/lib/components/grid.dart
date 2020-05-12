@@ -148,32 +148,23 @@ class Grid {
     }
     return ret;
   }
-
-  bool move(int r, int c) {
-    if (grid[r][c] == Piece.empty) {
-      grid[r][c] = player[game.turn % 2];
-      //history.addMove(r, c);
-      //printHistory();
-      // if (checkWinner(r, c)) {}
-      //print(checkWinner(r, c));
-      return true;
-    }
-    return false;
+  bool canMove(int r, int c) {
+    return grid[r][c] == Piece.empty;
   }
 
-  bool block(int r1, int c1, int r2, int c2) {
-    if (grid[r1][c1] == Piece.empty &&
+  void move(int r, int c) {
+    grid[r][c] = player[game.turn % 2];
+  }
+
+  bool canBlock(int r1, int c1, int r2, int c2) {
+    return grid[r1][c1] == Piece.empty &&
         grid[r2][c2] == Piece.empty &&
         ((r2 - r1).abs() == 1 && (c2 - c1).abs() < 1) ^
-            ((c2 - c1).abs() == 1 && (r2 - r1).abs() < 1)) {
-      grid[r1][c1] = Piece.block;
-      grid[r2][c2] = Piece.block;
-
-      //history.addBlock(r1, c1, r2, c2);
-
-      return true;
-    }
-    return false;
+          ((c2 - c1).abs() == 1 && (r2 - r1).abs() < 1);
+  }
+  void block(int r1, int c1, int r2, int c2) {
+    grid[r1][c1] = Piece.block;
+    grid[r2][c2] = Piece.block;
   }
 
   void undo(Turn recent) {
