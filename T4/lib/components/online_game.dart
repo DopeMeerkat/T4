@@ -9,6 +9,7 @@ class OnlineGame extends Game {
   bool resetting;
   final String id;
 
+  //this constructor may have issues
   OnlineGame(this.id) : super() {
     db = Firestore.instance.collection('games').document(id);
     moves = db.collection('moves');

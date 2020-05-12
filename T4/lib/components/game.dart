@@ -7,7 +7,7 @@ abstract class Game {
   int inARow;
   int size;
 
-  
+  //change this constructor later
   Game({this.size = 3, this.turn = 1, this.inARow = 3}) {
     grid = Grid.square(this, size);
   }

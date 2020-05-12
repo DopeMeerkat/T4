@@ -5,6 +5,7 @@ import 'game.dart';
 class OfflineGame extends Game {
   List<Turn> moveList;
 
+
   OfflineGame() : super() {
     moveList = [];
   }
