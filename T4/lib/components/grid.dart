@@ -1,30 +1,23 @@
-import 'move.dart';
+import 'piece.dart';
 import 'turn.dart';
+import 'game.dart';
 
 class Grid {
-  List<List<Move>> grid; //list of rows (first list is y axis, second is x)
+  List<List<Piece>> grid; //list of rows (first list is y axis, second is x)
   int inARow;
-  List<Turn> history;
+  Game game;
 
-  int turn;
-  List<Move> player;
+  List<Piece> player;
 
-  Grid(row, col, this.inARow) {
+  Grid(this.game, row, col, this.inARow) {
     grid = List.generate(
-        row, (i) => new List.filled(col, Move.empty, growable: true));
-    setTurn(0);
-    player = List<Move>();
-    player.add(Move.x);
-    player.add(Move.o);
-
-    history = List<Turn>();
+        row, (i) => new List.filled(col, Piece.empty, growable: true));
+    player = List<Piece>();
+    player.add(Piece.x);
+    player.add(Piece.o);
   }
 
-  Grid.normal() : this(3, 3, 3);
-
-  void setTurn(int _turn) {
-    turn = _turn;
-  }
+  Grid.normal(Game game) : this(game, 3, 3, 3);
 
   int rows() {
     return grid.length;
@@ -41,32 +34,29 @@ class Grid {
   void extend(int dir) {
     switch (dir) {
       case 0:
-        grid.forEach((row) => row.insert(0, Move.empty));
+        grid.forEach((row) => row.insert(0, Piece.empty));
         break;
       case 1:
-        grid.forEach((row) => row.add(Move.empty));
+        grid.forEach((row) => row.add(Piece.empty));
         break;
       case 2:
-        grid.insert(0, List<Move>.filled(cols(), Move.empty, growable: true));
+        grid.insert(0, List<Piece>.filled(cols(), Piece.empty, growable: true));
         break;
       case 3:
-        grid.add(List<Move>.filled(cols(), Move.empty, growable: true));
+        grid.add(List<Piece>.filled(cols(), Piece.empty, growable: true));
         break;
     }
-    List<int> params = List<int>();
-    params.add(dir);
-    Turn currentTurn = new Turn(turn, MoveType.extend, params);
-    history.add(currentTurn);
-    turn++;
+
+    //history.addExtend(dir);
   }
 
-  List<int> checkWinner(int r, c) {
+  List<int> checkWinner(int r, int c) {
     List<int> ret = new List<int>();
     int hor = 0, vert = 0, slash = 0, bSlash = 0;
     int hStart = 0, vStart = 0, sStart = 0, bsStart = 0;
     int hEnd = 0, vEnd = 0, sEnd = 0, bsEnd = 0;
-    var player = grid[r][c];
-    // print(grid);
+    //var player = grid[r][c];
+    var play = player[game.turn % 2];
     var rows = grid.length;
     var cols = grid[0].length;
     var max = rows;
@@ -84,7 +74,7 @@ class Grid {
       srs = r - (cols - 1 - c);
 
     for (int i = 0; i < max; i++) {
-      if (i < cols && grid[r][i] == player) //find horizontal
+      if (i < cols && grid[r][i] == play) //find horizontal
       {
         hor++;
         hEnd = i;
@@ -94,7 +84,7 @@ class Grid {
       } else
         break;
 
-      if (i < rows && grid[i][c] == player) //find vertical
+      if (i < rows && grid[i][c] == play) //find vertical
       {
         vEnd = i;
         vert++;
@@ -107,7 +97,7 @@ class Grid {
       // find backslash
       if (bsrs + i < rows &&
           bscs + i < cols &&
-          grid[bsrs + i][bscs + i] == player) {
+          grid[bsrs + i][bscs + i] == play) {
         bSlash++;
         bsEnd = i;
       } else if (bSlash < inARow) {
@@ -117,7 +107,7 @@ class Grid {
         break;
 
       //find slash
-      if (srs + i < rows && scs - i >= 0 && grid[srs + i][scs - i] == player) {
+      if (srs + i < rows && scs - i >= 0 && grid[srs + i][scs - i] == play) {
         slash++;
         sEnd = i;
       } else if (slash < inARow) {
@@ -158,52 +148,31 @@ class Grid {
     }
     return ret;
   }
-
-  bool move(int r, int c) {
-    if (grid[r][c] == Move.empty) {
-      grid[r][c] = player[turn % 2];
-
-      List<int> params = List<int>();
-      params.add(r);
-      params.add(c);
-      Turn currentTurn = new Turn(turn, MoveType.move, params);
-      history.add(currentTurn);
-      turn++;
-      printHistory();
-      // if (checkWinner(r, c)) {}
-      print(checkWinner(r, c));
-      return true;
-    }
-    return false;
+  bool canMove(int r, int c) {
+    return grid[r][c] == Piece.empty;
   }
 
-  bool block(int r1, int c1, int r2, int c2) {
-    if (grid[r1][c1] == Move.empty &&
-        grid[r2][c2] == Move.empty &&
+  void move(int r, int c) {
+    grid[r][c] = player[game.turn % 2];
+  }
+
+  bool canBlock(int r1, int c1, int r2, int c2) {
+    return grid[r1][c1] == Piece.empty &&
+        grid[r2][c2] == Piece.empty &&
         ((r2 - r1).abs() == 1 && (c2 - c1).abs() < 1) ^
-            ((c2 - c1).abs() == 1 && (r2 - r1).abs() < 1)) {
-      grid[r1][c1] = Move.block;
-      grid[r2][c2] = Move.block;
-
-      List<int> params = List<int>();
-      params.add(r1);
-      params.add(c1);
-      params.add(r2);
-      params.add(c2);
-      Turn currentTurn = new Turn(turn, MoveType.block, params);
-      history.add(currentTurn);
-
-      turn++;
-      return true;
-    }
-    return false;
+          ((c2 - c1).abs() == 1 && (r2 - r1).abs() < 1);
+  }
+  void block(int r1, int c1, int r2, int c2) {
+    grid[r1][c1] = Piece.block;
+    grid[r2][c2] = Piece.block;
   }
 
-  void undo() {
-    Turn recent = history.removeLast();
-    if (turn > 0) turn--;
+  void undo(Turn recent) {
+    if (recent == null) {
+      return;
+    }
     switch (recent.type) {
-      case MoveType.extend:
+      case TurnType.extend:
         switch (recent.params[0]) {
           // 0 - Left
           // 1 - Right
@@ -223,29 +192,23 @@ class Grid {
             break;
         }
         break;
-      case MoveType.move:
-        grid[recent.params[0]][recent.params[1]] = Move.empty;
+      case TurnType.move:
+        grid[recent.params[0]][recent.params[1]] = Piece.empty;
         break;
-      case MoveType.block:
-        grid[recent.params[0]][recent.params[1]] = Move.empty;
-        grid[recent.params[2]][recent.params[3]] = Move.empty;
+      case TurnType.block:
+        grid[recent.params[0]][recent.params[1]] = Piece.empty;
+        grid[recent.params[2]][recent.params[3]] = Piece.empty;
         break;
     }
   }
 
   void reset(int r, int c) {
-    history.clear();
     grid =
-        List.generate(r, (i) => new List.filled(c, Move.empty, growable: true));
-    setTurn(0);
-    // var len = history.length; //lmaoooo
-    // for (int i = 0; i < len; i++) {
-    //   undo();
-    // }
+        List.generate(r, (i) => new List.filled(c, Piece.empty, growable: true));
   }
 
   void printHistory() {
-    print("Printing History:");
-    history.forEach((element) => element.printTurn());
+    //print("Printing History:");
+    //print(history.toString());
   }
 }

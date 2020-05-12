@@ -2,35 +2,58 @@ import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter/widgets.dart';
 import 'package:T4/components/btn.dart';
-import 'package:T4/pages/start.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'grid.dart';
-import 'move.dart';
+import 'piece.dart';
 import 'line.dart';
+import 'game.dart';
+import 'online_game.dart';
+import 'offline_game.dart';
 
 class Board extends StatefulWidget {
-  final Grid grid = Grid.normal();
+  final Game game;
 
-  Board(); //implement later (with player names?)
+  Board(this.game); //implement later (with player names?)
 
   @override
-  _BoardState createState() => _BoardState(grid);
+  _BoardState createState() => _BoardState(game);
 }
 
 class _BoardState extends State<StatefulWidget>
     with SingleTickerProviderStateMixin {
   AnimationController _controller;
+  Game game;
   Grid grid;
   Offset startBlock;
   Offset endBlock; //for block moves
-  _BoardState(this.grid);
   GlobalKey _boardKey = GlobalKey();
-  double r1 = 0, c1 = 0, r2 = 1, c2 = 1, width = 10.0;
-  bool lineVisible = false;
+  double r1, c1, r2, c2, width;
+  bool lineVisible;
+
+  _BoardState(this.game) {
+    r1 = c1 = 0;
+    r2 = c2 = 0;
+    width = 10.0;
+    lineVisible = false;
+    grid = game.grid;
+
+    //update on db update
+    if (game.runtimeType == OnlineGame) {
+      OnlineGame onlineGame = game as OnlineGame;
+      onlineGame.listenRef().listen((event) {
+        event.documentChanges.forEach((change) {
+          setState(() {});
+        });
+      });
+    }
+  }
 
   @override
   void initState() {
     super.initState();
+
+    //var v = Firestore.instance.collection("game").add({"test": "test"});
     _controller = new AnimationController(
       duration: const Duration(seconds: 1),
       vsync: this,
@@ -179,7 +202,7 @@ class _BoardState extends State<StatefulWidget>
               Btn(
                 onTap: () {
                   lineVisible = false;
-                  setState(() => grid.undo());
+                  setState(() => game.undo());
                 },
                 height: 40,
                 width: 40,
@@ -206,7 +229,8 @@ class _BoardState extends State<StatefulWidget>
                   ),
               Btn(
                 onTap: () {
-                  setState(() => grid.reset(3, 3));
+                  setState(() => game.reset());
+                  //setState(() => grid.reset(3, 3));
                   lineVisible = false;
                 },
                 height: 40,
@@ -245,16 +269,17 @@ class _BoardState extends State<StatefulWidget>
           child: GestureDetector(
             behavior: HitTestBehavior.translucent,
             onTapUp: (TapUpDetails d) {
-              print("tapping");
+              //print("tapping");
               // _startAnimation();
               setState(() {
                 List<int> tile = getTileFromLocation(d.globalPosition);
-                grid.move(tile[0], tile[1]);
+                game.move(tile[0], tile[1]);
+
                 checkWin(tile[0], tile[1]);
               });
             },
             onPanStart: (DragStartDetails d) {
-              print("panning");
+              //print("panning");
               startBlock = d.globalPosition;
             },
             onPanUpdate: (DragUpdateDetails d) {
@@ -265,9 +290,13 @@ class _BoardState extends State<StatefulWidget>
                 List<int> startTile = getTileFromLocation(startBlock);
                 List<int> endTile = getTileFromLocation(endBlock);
                 if (startTile == endTile) {
-                  grid.move(startTile[0], startTile[1]);
+                  //grid.move(startTile[0], startTile[1]);
+                  game.move(startTile[0], startTile[1]);
+                } else {
+                  //grid.block(startTile[0], startTile[1], endTile[0], endTile[1]);
+                  game.block(
+                      startTile[0], startTile[1], endTile[0], endTile[1]);
                 }
-                grid.block(startTile[0], startTile[1], endTile[0], endTile[1]);
               });
             },
             child: Column(
@@ -331,16 +360,16 @@ class _BoardState extends State<StatefulWidget>
     if (r == 0 && c == 0) border = Border();
 
     switch (grid.grid[r][c]) {
-      case Move.o:
+      case Piece.o:
         image = Image.asset('assets/images/o.png');
         break;
-      case Move.x:
+      case Piece.x:
         image = Image.asset('assets/images/x.png');
         break;
-      case Move.block:
+      case Piece.block:
         image = Image.asset('assets/images/block.png');
         break;
-      case Move.empty:
+      case Piece.empty:
       //image = Image.asset('assets/images/block.png'); //change to empty
     }
     return AspectRatio(
