@@ -4,10 +4,12 @@ import 'grid.dart';
 abstract class Game {
   Grid grid;
   int turn;
+  int inARow;
 
   Game() {
     grid = Grid.normal(this);
     turn = 1;
+    inARow = 3;
   }
 
   void reset();

@@ -4,12 +4,11 @@ import 'game.dart';
 
 class Grid {
   List<List<Piece>> grid; //list of rows (first list is y axis, second is x)
-  int inARow;
   Game game;
 
   List<Piece> player;
 
-  Grid(this.game, row, col, this.inARow) {
+  Grid(this.game, row, col) {
     grid = List.generate(
         row, (i) => new List.filled(col, Piece.empty, growable: true));
     player = List<Piece>();
@@ -17,7 +16,7 @@ class Grid {
     player.add(Piece.o);
   }
 
-  Grid.normal(Game game) : this(game, 3, 3, 3);
+  Grid.normal(Game game) : this(game, 3, 3);
 
   int rows() {
     return grid.length;
@@ -78,7 +77,7 @@ class Grid {
       {
         hor++;
         hEnd = i;
-      } else if (hor < inARow) {
+      } else if (hor < game.inARow) {
         hor = 0;
         hStart = i + 1;
       } else
@@ -88,7 +87,7 @@ class Grid {
       {
         vEnd = i;
         vert++;
-      } else if (vert < inARow) {
+      } else if (vert < game.inARow) {
         vert = 0;
         vStart = i + 1;
       } else
@@ -100,7 +99,7 @@ class Grid {
           grid[bsrs + i][bscs + i] == play) {
         bSlash++;
         bsEnd = i;
-      } else if (bSlash < inARow) {
+      } else if (bSlash < game.inARow) {
         bSlash = 0;
         bsStart = i + 1;
       } else
@@ -110,7 +109,7 @@ class Grid {
       if (srs + i < rows && scs - i >= 0 && grid[srs + i][scs - i] == play) {
         slash++;
         sEnd = i;
-      } else if (slash < inARow) {
+      } else if (slash < game.inARow) {
         slash = 0;
         sStart = i + 1;
       } else
@@ -121,25 +120,25 @@ class Grid {
     //     hor >= inARow ||
     //     slash >= inARow ||
     //     bSlash >= inARow);
-    if (hor >= inARow) {
+    if (hor >= game.inARow) {
       print("horizWin");
       ret.add(r);
       ret.add(hStart);
       ret.add(r);
       ret.add(hEnd);
-    } else if (vert >= inARow) {
+    } else if (vert >= game.inARow) {
       print("vertWin");
       ret.add(vStart);
       ret.add(c);
       ret.add(vEnd);
       ret.add(c);
-    } else if (bSlash >= inARow) {
+    } else if (bSlash >= game.inARow) {
       print("bSlashWin");
       ret.add(bsrs + bsStart);
       ret.add(bscs + bsStart);
       ret.add(bsrs + bsEnd);
       ret.add(bscs + bsEnd);
-    } else if (slash >= inARow) {
+    } else if (slash >= game.inARow) {
       print("slashWin");
       ret.add(srs + sStart);
       ret.add(scs - sStart);
