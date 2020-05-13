@@ -1,11 +1,14 @@
 import 'turn.dart';
 import 'grid.dart';
+import 'board.dart';
 
 abstract class Game {
   Grid grid;
   int turn;
   int inARow;
   int size;
+
+  BoardState boardRef;
 
   //change this constructor later
   Game({this.size = 3, this.turn = 1, this.inARow = 3}) {

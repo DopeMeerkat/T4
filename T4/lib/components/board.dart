@@ -18,10 +18,10 @@ class Board extends StatefulWidget {
   Board(this.game); //implement later (with player names?)
 
   @override
-  _BoardState createState() => _BoardState(game);
+  BoardState createState() => BoardState(game);
 }
 
-class _BoardState extends State<StatefulWidget>
+class BoardState extends State<StatefulWidget>
     with SingleTickerProviderStateMixin {
   AnimationController _controller;
   Game game;
@@ -32,12 +32,13 @@ class _BoardState extends State<StatefulWidget>
   double r1, c1, r2, c2, width;
   bool lineVisible;
 
-  _BoardState(this.game) {
+  BoardState(this.game) {
     r1 = c1 = 0;
     r2 = c2 = 0;
     width = 10.0;
     lineVisible = false;
     grid = game.grid;
+    game.boardRef = this;
 
     //update on db update
     if (game.runtimeType == OnlineGame) {
@@ -75,6 +76,7 @@ class _BoardState extends State<StatefulWidget>
     _controller.forward();
   }
 
+  /*
   void checkWin(int r, int c) {
     List<int> endpoints = grid.checkWinner(r, c);
     if (endpoints.isNotEmpty) {
@@ -92,6 +94,24 @@ class _BoardState extends State<StatefulWidget>
       lineVisible = true;
       _startAnimation();
     }
+  }
+  */
+
+  void drawLine(int r1, int c1, int r2, int c2) {
+    Offset p1 = getLocationFromTile(r1, c1);
+    Offset p2 = getLocationFromTile(r2, c2);
+    this.r1 = p1.dx;
+    this.c1 = p1.dy;
+    this.r2 = p2.dx;
+    this.c2 = p2.dy;
+
+    int max = grid.rows();
+    if (grid.cols() > grid.rows()) max = grid.cols();
+
+    width = 30 / max;
+    if (width == 0) width = 1;
+    lineVisible = true;
+    _startAnimation();
   }
 
   @override
@@ -249,12 +269,12 @@ class _BoardState extends State<StatefulWidget>
           child: GestureDetector(
             behavior: HitTestBehavior.translucent,
             onTapUp: (TapUpDetails d) {
-              //print("tapping");
+              print("tapping");
               // _startAnimation();
               setState(() {
                 List<int> tile = getTileFromLocation(d.globalPosition);
                 game.move(tile[0], tile[1]);
-                checkWin(tile[0], tile[1]); //check win first because move increments turn
+                //checkWin(tile[0], tile[1]); //check win first because move increments turn
               });
               setState(() {});
             },

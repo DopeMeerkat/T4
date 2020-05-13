@@ -56,7 +56,7 @@ class Grid {
     int hEnd = 0, vEnd = 0, sEnd = 0, bsEnd = 0;
 
     Piece temp = grid[r][c];
-    Piece play = player[1 - game.turn % 2]; //swapped
+    Piece play = player[game.turn % 2]; //swapped
 
     grid[r][c] = play;
 
@@ -154,6 +154,11 @@ class Grid {
 
   void move(int r, int c) {
     grid[r][c] = player[game.turn % 2];
+    
+    List<int> endpoints = checkWinner(r, c);
+    if (endpoints.length != 0) {
+      game.boardRef.drawLine(endpoints[0], endpoints[1], endpoints[2], endpoints[3]);
+    }
   }
 
   bool canBlock(int r1, int c1, int r2, int c2) {
