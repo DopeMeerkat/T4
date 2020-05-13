@@ -14,6 +14,7 @@ class GamePage extends StatefulWidget {
 class GamePageState extends State<GamePage> {
   final Game game;
   GamePageState(this.game);
+  var scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
@@ -23,9 +24,25 @@ class GamePageState extends State<GamePage> {
       },
       child: SafeArea(
         child: Scaffold(
-          body: Container(
-            width: MediaQuery.of(context).size.width,
-            child: Board(game),
+          key: scaffoldKey,
+          drawer: new Drawer(
+            child: new ListView(),
+          ),
+          body: Stack(
+            children: <Widget>[
+              Container(
+                width: MediaQuery.of(context).size.width,
+                child: Board(game),
+              ),
+              Positioned(
+                left: 10,
+                top: 20,
+                child: IconButton(
+                  icon: Icon(Icons.menu),
+                  onPressed: () => scaffoldKey.currentState.openDrawer(),
+                ),
+              ),
+            ],
           ),
         ),
       ),

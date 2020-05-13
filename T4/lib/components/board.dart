@@ -3,6 +3,7 @@ import 'package:flutter/semantics.dart';
 import 'package:flutter/widgets.dart';
 import 'package:T4/components/btn.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:T4/constants.dart';
 
 import 'grid.dart';
 import 'piece.dart';
@@ -22,7 +23,6 @@ class Board extends StatefulWidget {
 
 class _BoardState extends State<StatefulWidget>
     with SingleTickerProviderStateMixin {
-
   AnimationController _controller;
   Game game;
   Grid grid;
@@ -31,7 +31,6 @@ class _BoardState extends State<StatefulWidget>
   GlobalKey _boardKey = GlobalKey();
   double r1, c1, r2, c2, width;
   bool lineVisible;
-  
 
   _BoardState(this.game) {
     r1 = c1 = 0;
@@ -44,10 +43,10 @@ class _BoardState extends State<StatefulWidget>
     if (game.runtimeType == OnlineGame) {
       OnlineGame onlineGame = game as OnlineGame;
       onlineGame.listenRef().listen((event) {
-          event.documentChanges.forEach((change) {
-            setState(() {
-            });
+        event.documentChanges.forEach((change) {
+          setState(() {
           });
+        });
       });
     }
   }
@@ -85,8 +84,8 @@ class _BoardState extends State<StatefulWidget>
       c1 = p1.dy;
       r2 = p2.dx;
       c2 = p2.dy;
-      int max = grid.grid.length;
-      if (grid.grid[0].length > grid.grid.length) max = grid.grid[0].length;
+      int max = grid.rows();
+      if (grid.cols() > grid.rows()) max = grid.cols();
 
       width = 30 / max;
       if (width == 0) width = 1;
@@ -97,48 +96,69 @@ class _BoardState extends State<StatefulWidget>
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return Scaffold( //don't know why this is necessary to make a material widget
+      body: Container(
       margin: const EdgeInsets.all(10.0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Btn(
-            onTap: () {
-              //setState(() => grid.extend(2));
-              setState(() => game.extend(2));
-            },
-            height: 40,
-            width: 250,
-            borderRadius: 250,
-            color: Colors.white,
-            child: Text(
-              "^",
-              style: TextStyle(
-                  color: Colors.black.withOpacity(.8),
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700),
-            ),
-          ),
+          Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Btn(
+                  onTap: () {
+                    Navigator.of(context).popUntil((route) => route.isFirst);
+                  },
+                  height: 40,
+                  width: 40,
+                  borderRadius: 250,
+                  color: Colors.white,
+                  child: new Icon(Icons.home),
+                ),
+                Btn(
+                    onTap: () {
+                      setState(() => game.extend(2));
+                    },
+                    height: 40,
+                    width: 250,
+                    borderRadius: 250,
+                    color: Colors.white,
+                    child: new Icon(Icons.arrow_upward)),
+                Btn(
+                  onTap: () {},
+                  height: 40,
+                  width: 40,
+                  borderRadius: 250,
+                  color: Colors.white,
+                  // child: new Icon(Icons.settings),
+                  child: PopupMenuButton<String>(
+                    onSelected: choiceAction,
+                    icon: new Icon(Icons.settings),
+                    shape: new RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20)),
+                    itemBuilder: (BuildContext context) {
+                      return Constants.choices.map((String choice) {
+                        return PopupMenuItem<String>(
+                          value: choice,
+                          child: Text(choice),
+                        );
+                      }).toList();
+                    },
+                  ),
+                ),
+              ]),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Btn(
-                onTap: () {
-                  //setState(() => grid.extend(0));
-                  setState(() => game.extend(0));
-                },
-                height: 250,
-                width: 40,
-                borderRadius: 250,
-                color: Colors.white,
-                child: Text(
-                  "<",
-                  style: TextStyle(
-                      color: Colors.black.withOpacity(.8),
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700),
-                ),
-              ),
+                  onTap: () {
+                    setState(() => game.extend(0));
+                  },
+                  height: 250,
+                  width: 40,
+                  borderRadius: 250,
+                  color: Colors.white,
+                  child: new Icon(Icons.arrow_back)),
               CustomPaint(
                 foregroundPainter: AnimatedPainter(
                     _controller, r1, c1, r2, c2, width, lineVisible),
@@ -155,69 +175,55 @@ class _BoardState extends State<StatefulWidget>
                 ),
               ),
               Btn(
-                onTap: () {
-                  setState(() => game.extend(1));
-                },
-                height: 250,
-                width: 40,
-                borderRadius: 250,
-                color: Colors.white,
-                child: Text(
-                  ">",
-                  style: TextStyle(
-                      color: Colors.black.withOpacity(.8),
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700),
-                ),
-              ),
+                  onTap: () {
+                    setState(() => game.extend(1));
+                  },
+                  height: 250,
+                  width: 40,
+                  borderRadius: 250,
+                  color: Colors.white,
+                  child: new Icon(Icons.arrow_forward)),
             ],
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Btn(
-                onTap: () {
-                  lineVisible = false;
-                  setState(() => game.undo());
-                },
-                height: 40,
-                width: 40,
-                borderRadius: 250,
-                color: Colors.white,
-                child: Icon(Icons.undo),
-              ),
-              Btn(
-                onTap: () {
-                  //setState(() => grid.extend(3));
-                  setState(() => game.extend(3));
-                },
-                height: 40,
-                width: 250,
-                borderRadius: 250,
-                color: Colors.white,
-                child: Text(
-                  "v",
-                  style: TextStyle(
-                      color: Colors.black.withOpacity(.8),
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700),
-                ),
-              ),
-              Btn(
-                onTap: () {
-                  setState(() => game.reset());
-                  //setState(() => grid.reset(3, 3));
-                  lineVisible = false;
-                },
-                height: 40,
-                width: 40,
-                borderRadius: 250,
-                color: Colors.white,
-                child: Icon(Icons.refresh),
-              ),
-            ],
-          )
+          // Row(
+          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //   children: <Widget>[
+          //     Btn(
+          //       onTap: () {
+          //         lineVisible = false;
+          //         setState(() => game.undo());
+          //       },
+          //       height: 40,
+          //       width: 40,
+          //       borderRadius: 250,
+          //       color: Colors.white,
+          //       child: new Icon(Icons.undo),
+          //     ),
+          Btn(
+              onTap: () {
+                setState(() => game.extend(3));
+              },
+              height: 40,
+              width: 250,
+              borderRadius: 250,
+              color: Colors.white,
+              child: new Icon(Icons.arrow_downward)),
+          //   Btn(
+          //     onTap: () {
+          //       setState(() => game.reset());
+          //       //setState(() => grid.reset(3, 3));
+          //       lineVisible = false;
+          //     },
+          //     height: 40,
+          //     width: 40,
+          //     borderRadius: 250,
+          //     color: Colors.white,
+          //     child: new Icon(Icons.refresh),
+          //   ),
+          // ],
+          // )
         ],
+      ),
       ),
     );
   }
@@ -250,9 +256,9 @@ class _BoardState extends State<StatefulWidget>
               setState(() {
                 List<int> tile = getTileFromLocation(d.globalPosition);
                 game.move(tile[0], tile[1]);
-
-                checkWin(tile[0], tile[1]);
+                checkWin(tile[0], tile[1]); //check win first because move increments turn
               });
+              setState(() {});
             },
             onPanStart: (DragStartDetails d) {
               //print("panning");
@@ -270,7 +276,8 @@ class _BoardState extends State<StatefulWidget>
                   game.move(startTile[0], startTile[1]);
                 } else {
                   //grid.block(startTile[0], startTile[1], endTile[0], endTile[1]);
-                  game.block(startTile[0], startTile[1], endTile[0], endTile[1]);
+                  game.block(
+                      startTile[0], startTile[1], endTile[0], endTile[1]);
                 }
               });
             },
@@ -321,6 +328,17 @@ class _BoardState extends State<StatefulWidget>
     var y = (r + .5) * (boardHeight / grid.rows());
     var x = (c + .5) * (boardWidth / grid.cols());
     return Offset(x, y);
+  }
+
+  void choiceAction(String choice) {
+    if (choice == Constants.GameSettings) {
+    } else if (choice == Constants.Undo) {
+      lineVisible = false;
+      setState(() => game.undo());
+    } else if (choice == Constants.NewGame) {
+      setState(() => game.reset());
+      lineVisible = false;
+    }
   }
 
   //use row and col to do logic stuff later

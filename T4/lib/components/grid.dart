@@ -55,7 +55,8 @@ class Grid {
     int hStart = 0, vStart = 0, sStart = 0, bsStart = 0;
     int hEnd = 0, vEnd = 0, sEnd = 0, bsEnd = 0;
     //var player = grid[r][c];
-    var play = player[game.turn % 2];
+    Piece play = player[1 - game.turn % 2]; //swapped
+    //grid[r][c] = player[1 - game.turn % 2]; //caution
     var rows = grid.length;
     var cols = grid[0].length;
     var max = rows;
@@ -140,6 +141,7 @@ class Grid {
       ret.add(srs + sEnd);
       ret.add(scs - sEnd);
     }
+    grid[r][c] = Piece.empty;
     return ret;
   }
 
