@@ -87,7 +87,7 @@ class StartPage extends StatelessWidget {
                   onPressed: () {
                     Navigator.pop(context);
                     Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => Board(OnlineGame(controller.text))),
+                      MaterialPageRoute(builder: (context) => GamePage(OnlineGame(controller.text))),
                     );
                   }
               ),

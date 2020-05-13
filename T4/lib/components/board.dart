@@ -96,8 +96,7 @@ class _BoardState extends State<StatefulWidget>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold( //don't know why this is necessary to make a material widget
-      body: Container(
+    return Container(
       margin: const EdgeInsets.all(10.0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -223,7 +222,6 @@ class _BoardState extends State<StatefulWidget>
           // ],
           // )
         ],
-      ),
       ),
     );
   }
