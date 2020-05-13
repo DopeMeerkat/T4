@@ -141,7 +141,7 @@ class Grid {
       ret.add(srs + sEnd);
       ret.add(scs - sEnd);
     }
-    grid[r][c] = Piece.empty;
+    //grid[r][c] = Piece.empty;
     return ret;
   }
 
